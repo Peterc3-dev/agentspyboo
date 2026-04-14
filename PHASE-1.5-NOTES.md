@@ -221,3 +221,51 @@ etc, and wrote the summary into the markdown report.
 - `PHASE-1.5-NOTES.md` — this file
 
 Nothing else. Phase 1's `main` branch is unchanged.
+
+---
+
+## Architectural decision: flat-for-now, port-after-Phase-2
+
+**Context.** The original scaffold (commit `4ae87c6`) shipped 28 files under
+`src/agent/`, `src/llm/`, `src/tools/`, `src/findings/`, `src/report/`, and
+`src/config.rs` — a full hierarchical architecture with planner, state
+machine, tool registry, parser, prompt builder, findings models, dedup,
+report templates, etc. Phase 1 did NOT use any of it. It wrote a flat
+`src/main.rs` next to the scaffold and never imported the modules. Phase 1.5
+has continued growing `main.rs` flat (now ~860 lines). The scaffold sits on
+disk, still in git, compiled by nothing.
+
+**Three paths considered (2026-04-13, reviewed with user):**
+
+- **Path A.** Stay flat forever. Grow `main.rs` until it hurts.
+- **Path B.** Port current `main.rs` logic back into the scaffold's
+  architecture. Modules become alive.
+- **Path C.** Delete the dead scaffold files. Clean git log. Rebuild
+  architecture from scratch when Phase 2+ demands it.
+
+**Decision: Path B, but not yet.** Rationale:
+
+1. Phase 1.5's `main.rs` is 860 lines — reviewable, not yet painful.
+2. Phase 2 (NPU inference via `ort` + Vitis AI EP) will add ~400-600 lines
+   of inference-path code. That's the pain point where flat becomes
+   unmanageable and clean module boundaries start to matter.
+3. Porting the MVP into module boundaries BEFORE building Phase 2 means
+   designing abstractions around what we guessed, not what we built.
+   Refactoring WITH Phase 2 in hand means the module shapes get informed
+   by real working code across three tools + an NPU backend.
+4. The scaffold files stay untouched as a reference artifact — original
+   intent is preserved for whichever parts survive the port.
+
+**Commitment:** Phase 2 ships flat in `main.rs`. Phase 2.5 is the refactor:
+take the working flat code and redistribute it into
+`src/{agent,llm,tools,findings,report}/`, add `mod` declarations to
+`main.rs`, port over any scaffold files that match what we actually built,
+delete the ones that don't. `main.rs` becomes a thin router again.
+
+**Do not re-litigate this.** If a future session or agent is tempted to
+either (a) delete the scaffold before Phase 2.5, or (b) port the flat code
+into modules before Phase 2 ships, stop. The answer is "after Phase 2,
+informed by working code."
+
+**Trigger to revisit:** `main.rs` exceeds ~1500 lines before Phase 2 NPU
+work begins, OR Phase 2 NPU work is complete. Whichever comes first.
