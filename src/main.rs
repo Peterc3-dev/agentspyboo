@@ -55,6 +55,12 @@ struct Cli {
     #[arg(long, global = true, default_value_t = 5)]
     nuclei_cap: usize,
 
+    /// Disable findings deduplication. By default, identical (kind, details)
+    /// findings across multiple targets are folded into one entry with a
+    /// targets[] list. With this flag, every raw finding is emitted verbatim.
+    #[arg(long, global = true, default_value_t = false)]
+    no_dedup: bool,
+
     /// Scope allowlist (comma-separated globs, e.g. "example.com,*.example.com").
     /// Default is "<target>,*.<target>".
     #[arg(long, global = true)]
@@ -83,6 +89,7 @@ struct Config {
     rate_limit_ms: u64,
     httpx_cap: usize,
     nuclei_cap: usize,
+    no_dedup: bool,
     scope_patterns: Vec<String>,
     verbose: bool,
 }
@@ -131,6 +138,7 @@ impl Config {
             rate_limit_ms,
             httpx_cap: cli.httpx_cap,
             nuclei_cap: cli.nuclei_cap,
+            no_dedup: cli.no_dedup,
             scope_patterns,
             verbose: cli.verbose,
         }
@@ -632,6 +640,79 @@ struct Finding {
     kind: String,
     target: String,
     details: String,
+    #[serde(default = "Utc::now")]
+    first_seen: DateTime<Utc>,
+}
+
+impl Finding {
+    fn new(severity: Severity, kind: impl Into<String>, target: impl Into<String>, details: impl Into<String>) -> Self {
+        Self {
+            severity,
+            kind: kind.into(),
+            target: target.into(),
+            details: details.into(),
+            first_seen: Utc::now(),
+        }
+    }
+}
+
+/// Deduped view of findings. Identical (kind, details) tuples are folded
+/// into one entry with all observed targets and a source count.
+#[derive(Debug, Clone, Serialize)]
+struct DedupedFinding {
+    severity: Severity,
+    kind: String,
+    targets: Vec<String>,
+    details: String,
+    count: usize,
+    first_seen: DateTime<Utc>,
+}
+
+/// Fold a flat findings list into deduped entries. Grouping key is
+/// (kind, details) — severity is promoted to the max of grouped rows, targets
+/// are collected (dedup-preserving insertion order), count reflects source
+/// count, first_seen is the earliest timestamp across the group.
+fn dedup_findings(raw: &[Finding]) -> Vec<DedupedFinding> {
+    use std::collections::BTreeMap;
+    // BTreeMap preserves a deterministic iteration order for a stable report.
+    let mut groups: BTreeMap<(String, String), DedupedFinding> = BTreeMap::new();
+    let mut order: Vec<(String, String)> = Vec::new();
+    for f in raw {
+        let key = (f.kind.clone(), f.details.clone());
+        if let Some(entry) = groups.get_mut(&key) {
+            if !entry.targets.contains(&f.target) {
+                entry.targets.push(f.target.clone());
+            }
+            if f.severity > entry.severity {
+                entry.severity = f.severity;
+            }
+            if f.first_seen < entry.first_seen {
+                entry.first_seen = f.first_seen;
+            }
+            entry.count += 1;
+        } else {
+            order.push(key.clone());
+            groups.insert(
+                key,
+                DedupedFinding {
+                    severity: f.severity,
+                    kind: f.kind.clone(),
+                    targets: vec![f.target.clone()],
+                    details: f.details.clone(),
+                    count: 1,
+                    first_seen: f.first_seen,
+                },
+            );
+        }
+    }
+    // Emit in first-seen insertion order so the report is stable and readable.
+    let mut out: Vec<DedupedFinding> = order
+        .into_iter()
+        .filter_map(|k| groups.remove(&k))
+        .collect();
+    // Sort by severity desc, then by count desc, then leave insertion order.
+    out.sort_by(|a, b| b.severity.cmp(&a.severity).then(b.count.cmp(&a.count)));
+    out
 }
 
 // ===================== ReAct loop =====================
@@ -678,7 +759,13 @@ struct RunRecord {
     scope: Vec<String>,
     tools_fired: Vec<String>,
     steps: Vec<StepRecord>,
-    findings: Vec<Finding>,
+    /// Deduped findings by default. When --no-dedup is set, this holds the
+    /// flat finding rows instead (one Finding per row, targets length == 1).
+    findings: Vec<DedupedFinding>,
+    /// Un-deduped flat findings list, preserved so downstream consumers can
+    /// reconstruct the exact per-target observations if dedup collapsed them.
+    raw_findings: Vec<Finding>,
+    dedup_enabled: bool,
     final_summary: String,
     next_steps: Vec<String>,
     /// When nuclei was run on fewer hosts than httpx returned (nuclei_cap pruning).
@@ -762,12 +849,7 @@ fn parse_httpx_output(stdout: &str) -> (Vec<String>, Vec<Finding>) {
             title.chars().take(80).collect::<String>(),
             tech.join(", ")
         );
-        findings.push(Finding {
-            severity: sev,
-            kind: "http-probe".into(),
-            target: host,
-            details,
-        });
+        findings.push(Finding::new(sev, "http-probe", host, details));
     }
     (live_urls, findings)
 }
@@ -901,12 +983,12 @@ fn parse_nuclei_output(stdout: &str) -> Vec<Finding> {
             .unwrap_or("")
             .to_string();
         let details = format!("{name} [{template_id}]");
-        out.push(Finding {
-            severity: Severity::from_str_loose(sev_str),
-            kind: "nuclei".into(),
-            target: matched,
+        out.push(Finding::new(
+            Severity::from_str_loose(sev_str),
+            "nuclei",
+            matched,
             details,
-        });
+        ));
     }
     out
 }
@@ -923,6 +1005,10 @@ async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     println!("[*] Rate limit    : {}ms", cfg.rate_limit_ms);
     println!("[*] httpx cap     : {}", cfg.httpx_cap);
     println!("[*] nuclei cap    : {}", cfg.nuclei_cap);
+    println!(
+        "[*] dedup         : {}",
+        if cfg.no_dedup { "off (--no-dedup)" } else { "on" }
+    );
     println!();
 
     // Preflight: refuse if target itself is out of scope.
@@ -1296,12 +1382,12 @@ async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         if exec.error.is_none() {
                             last_subfinder_hosts = extract_hosts_from_subfinder(&exec.stdout);
                             for h in &last_subfinder_hosts {
-                                all_findings.push(Finding {
-                                    severity: Severity::Info,
-                                    kind: "subdomain".into(),
-                                    target: h.clone(),
-                                    details: "discovered via subfinder".into(),
-                                });
+                                all_findings.push(Finding::new(
+                                    Severity::Info,
+                                    "subdomain",
+                                    h.clone(),
+                                    "discovered via subfinder",
+                                ));
                             }
                         }
                     }
@@ -1418,8 +1504,26 @@ async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
         }
     }
 
-    // Sort findings by severity desc for report rendering.
+    // Sort raw findings by severity desc for report rendering.
     all_findings.sort_by(|a, b| b.severity.cmp(&a.severity));
+    let raw_findings_view = all_findings.clone();
+
+    // Dedup (default) or passthrough.
+    let findings_view: Vec<DedupedFinding> = if cfg.no_dedup {
+        all_findings
+            .iter()
+            .map(|f| DedupedFinding {
+                severity: f.severity,
+                kind: f.kind.clone(),
+                targets: vec![f.target.clone()],
+                details: f.details.clone(),
+                count: 1,
+                first_seen: f.first_seen,
+            })
+            .collect()
+    } else {
+        dedup_findings(&all_findings)
+    };
 
     let finished_at = Utc::now();
     let record = RunRecord {
@@ -1431,7 +1535,9 @@ async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
         scope: cfg.scope_patterns.clone(),
         tools_fired: tools_fired.clone(),
         steps,
-        findings: all_findings,
+        findings: findings_view,
+        raw_findings: raw_findings_view,
+        dedup_enabled: !cfg.no_dedup,
         final_summary: final_summary.clone(),
         next_steps: next_steps_llm,
         nuclei_narrow: nuclei_narrow_note,
@@ -1493,8 +1599,16 @@ fn render_report(r: &RunRecord) -> String {
     if r.findings.is_empty() {
         out.push_str("_No findings recorded._\n\n");
     } else {
-        out.push_str("| # | Severity | Type | Target | Details |\n");
-        out.push_str("|---|----------|------|--------|---------|\n");
+        if r.dedup_enabled && r.raw_findings.len() != r.findings.len() {
+            out.push_str(&format!(
+                "_Dedup folded {} raw observations into {} grouped findings. Disable with `--no-dedup`._\n\n",
+                r.raw_findings.len(),
+                r.findings.len()
+            ));
+        }
+        out.push_str("| # | Severity | Type | Targets | Details |\n");
+        out.push_str("|---|----------|------|---------|---------|\n");
+        let mut expand_sections: Vec<(usize, &DedupedFinding)> = Vec::new();
         for (i, f) in r.findings.iter().enumerate() {
             let details_clean = f
                 .details
@@ -1503,18 +1617,36 @@ fn render_report(r: &RunRecord) -> String {
                 .chars()
                 .take(120)
                 .collect::<String>();
-            let target_clean = f.target.replace('|', "\\|");
+            let target_cell = if f.targets.len() == 1 {
+                f.targets[0].replace('|', "\\|")
+            } else {
+                format!("{} targets (x{})", f.targets.len(), f.count)
+            };
             out.push_str(&format!(
                 "| {} | {} {} | {} | {} | {} |\n",
                 i + 1,
                 f.severity.icon(),
                 f.severity.label(),
                 f.kind,
-                target_clean,
+                target_cell,
                 details_clean
             ));
+            if f.targets.len() > 1 {
+                expand_sections.push((i + 1, f));
+            }
         }
-        out.push_str("\n");
+        out.push('\n');
+        // Per-finding target lists for the collapsed entries.
+        for (idx, f) in expand_sections {
+            out.push_str(&format!(
+                "<details><summary>Finding #{idx} — {} target(s)</summary>\n\n",
+                f.targets.len()
+            ));
+            for t in &f.targets {
+                out.push_str(&format!("- `{t}`\n"));
+            }
+            out.push_str("\n</details>\n\n");
+        }
     }
 
     // Methodology — auto-generated from the chain.
