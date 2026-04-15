@@ -287,7 +287,7 @@ impl ToolKind {
         match self {
             ToolKind::Subfinder => Duration::from_secs(90),
             ToolKind::Httpx => Duration::from_secs(180),
-            ToolKind::Nuclei => Duration::from_secs(300),
+            ToolKind::Nuclei => Duration::from_secs(900),
         }
     }
 }
@@ -441,7 +441,7 @@ async fn exec_nuclei(urls: &[String]) -> Result<(String, String)> {
     let result = tokio::time::timeout(ToolKind::Nuclei.timeout(), cmd.output()).await;
     let _ = std::fs::remove_file(&tmp);
     let out = result
-        .map_err(|_| anyhow!("nuclei timed out after 300s"))?
+        .map_err(|_| anyhow!("nuclei timed out after 900s"))?
         .context("failed to spawn nuclei")?;
     let stdout = String::from_utf8_lossy(&out.stdout).to_string();
     let stderr = String::from_utf8_lossy(&out.stderr).to_string();
