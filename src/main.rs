@@ -4,7 +4,7 @@
 // Scope allowlist, per-iteration rate limit, severity-rated findings, and a
 // markdown report that matches the ai-redteam-reports/ format.
 //
-// Phase 2 NPU inference (ort + Vitis) is parked on a kernel-driver blocker —
+// Phase 2 NPU inference (ort + Vitis) — driver unblocked, runtime blocked —
 // see PHASE-2-RECON.md. This file is the CPU-track Phase 2.
 //
 // Module layout (Phase 2.5 refactor):

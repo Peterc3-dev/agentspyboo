@@ -1,24 +1,20 @@
 # AgentSpyBoo
 
-A Rust-based AI red team agent that runs a multi-step ReAct loop against a local OpenAI-compatible LLM server. Targets AMD Ryzen AI hardware (currently CPU-path; NPU path parked on a hardware blocker — see [`PHASE-2-RECON.md`](PHASE-2-RECON.md)).
+A Rust-based AI red team agent that runs a multi-step ReAct loop against a local OpenAI-compatible LLM server. Targets AMD Ryzen AI hardware (CPU-path today; NPU driver unblocked, inference runtime blocked — see [`PHASE-2-RECON.md`](PHASE-2-RECON.md)).
 
 ## Current state
 
-- **Branch `main`**: Phase 1 MVP — single-shot ReAct loop, one tool (`subfinder`), end-to-end working. Proves the pipe.
-- **Phase 1.5 and Phase 2 CPU** exist on private branches with multi-tool chaining, scope guards, severity ratings, and structured Markdown reports. Not yet pushed publicly — see [`PHASE-1.5-NOTES.md`](PHASE-1.5-NOTES.md) and the Phase 2 CPU work for details.
-
-This README describes Phase 1 MVP. Features added in later phases are flagged below.
+- **Branch `main`**: Phase 2 CPU + Phase 2.5 refactor — multi-step ReAct loop, three chained tools (`subfinder` → `httpx` → `nuclei`), scope guards, severity-rated findings with dedup, structured Markdown reports, modular `src/` layout.
+- **Phase 3** (next): org-level recon via [Pius](https://github.com/pius-scout/pius) as a preflight step before the existing tool chain. Adds `--org` and `--asn` flags.
 
 ## Architecture
 
-- **Loop**: Observe → Think → Act. The LLM is told about one tool, emits a tool call, we run it, feed results back, ask for a summary.
+- **Loop**: Observe → Think → Act. The LLM sees three tools, picks one per iteration, we run it, feed results back, repeat until the LLM decides to summarize.
 - **LLM backend**: OpenAI-compatible chat completion API. Tested against [Lemonade Server](https://github.com/lemonade-sdk/lemonade) running `Qwen3-1.7B-GGUF` via llama.cpp on CPU. Any compatible server should work (Ollama, vLLM, etc.) but only Lemonade is exercised.
-- **Tool chain**:
-  - Phase 1 (main): `subfinder`
-  - Phase 1.5 (private branch): `subfinder` → `httpx`
-  - Phase 2 CPU (private branch): `subfinder` → `httpx` → `nuclei` (curated templates, `-severity medium,high,critical`)
-- **Findings**: written as JSON files under `findings/` (Phase 1.5+). Severity-rated (info/low/medium/high/critical, Phase 2+).
-- **Reports**: Markdown under `reports/` (Phase 1.5+), structured with Executive Summary, Findings Table, Methodology, Step Detail, Recommended Next Steps (Phase 2 CPU+).
+- **Tool chain**: `subfinder` → `httpx` → `nuclei` (curated templates, `-severity medium,high,critical`). Scope-guarded: every discovered host is checked against the `--scope` glob before being passed to the next tool.
+- **Findings**: JSON files under `findings/`, severity-rated (info/low/medium/high/critical), deduplicated across iterations.
+- **Reports**: Markdown under `reports/`, structured with Executive Summary, Findings Table, Methodology, Step Detail, Recommended Next Steps.
+- **Module layout** (Phase 2.5 refactor): `config.rs`, `scope.rs`, `llm/` (client, parser, prompt), `tools/` (registry, locate, subfinder, httpx, nuclei), `findings/` (models, parse), `agent/` (react_loop, state), `report/` (generator).
 
 ## Build
 
@@ -33,25 +29,11 @@ Requires Rust 1.75+.
 ## Runtime requirements
 
 - A local LLM server exposing an OpenAI-compatible `/v1/chat/completions` endpoint. Default target is `http://127.0.0.1:13305/api/v1` (Lemonade). Configurable via `--base-url` or the `LEMONADE_BASE_URL` env var.
-- Recon tools on `$PATH`:
-  - Phase 1 needs: `subfinder`
-  - Phase 1.5 adds: `httpx`
-  - Phase 2 CPU adds: `nuclei` (with template set installed at the default location)
+- Recon tools on `$PATH`: `subfinder`, `httpx`, `nuclei` (with template set installed at the default location).
 
 On the dev target these live at `$HOME/go/bin` after a standard ProjectDiscovery install.
 
 ## Usage
-
-**Phase 1 MVP (public `main`)**:
-
-```bash
-agentspyboo recon example.com \
-  --llm-url http://127.0.0.1:13305/api/v1 \
-  --model Qwen3-1.7B-GGUF \
-  --api-key lemonade
-```
-
-**Phase 2 CPU (private branches)** adds:
 
 ```bash
 agentspyboo recon example.com \
@@ -72,11 +54,11 @@ None of the hardware specifics are required for the current CPU path — the age
 
 ## Honest state
 
-- ✅ Phase 1 MVP runs end-to-end on the GPD against real targets
-- ✅ Phase 1.5 + Phase 2 CPU work locally with 3 tools and structured reports
-- ⛔ NPU inference is **not** working. Documented blocker in `PHASE-2-RECON.md`.
-- ⚠️ Nuclei on the target hardware CPU still times out on full template sweeps; one of several open issues tracked in `PHASE-2-NOTES.md` on the private branch
-- ⚠️ No automated tests yet. All verification has been manual end-to-end runs against `example.com` and `hackerone.com`
-- 📝 Scaffold files under `src/agent/`, `src/llm/`, `src/tools/` (beyond the three wired tools), `src/findings/`, `src/report/` are **dead code** preserved as the target architecture for a Phase 2.5 refactor. They are not compiled into the binary. See `PHASE-1.5-NOTES.md` for the architectural rationale.
+- ✅ Phase 2 CPU runs end-to-end on the GPD against real targets (tested: `hackerone.com`, `peterc3-dev.github.io`, `gitlab.com`)
+- ✅ Phase 2.5 refactor shipped — `src/main.rs` is 39 lines, all logic lives in typed modules
+- ✅ NPU driver unblocked — patched `amdxdna.ko` loads on cold boot, `xrt-smi` + `flm validate` green. See [`PHASE-2-RECON.md`](PHASE-2-RECON.md).
+- ⛔ NPU **inference** still blocked — FastFlowLM can't handle protocol-7 opcodes required by Qwen3/GGUF models. CPU path remains active until this unblocks.
+- ⚠️ Nuclei on the target hardware CPU still times out on full template sweeps with large host lists; `--nuclei-cap` flag added to limit input hosts
+- ⚠️ No automated tests yet. All verification has been manual end-to-end runs.
 
 See [`RESEARCH.md`](RESEARCH.md) for the research brief this project is based on, including references to comparable pentest agents (Shannon, PentestGPT, PentAGI, CAI), NPU backend options (FastFlowLM, ort crate + Vitis AI EP), and an honest gap analysis.

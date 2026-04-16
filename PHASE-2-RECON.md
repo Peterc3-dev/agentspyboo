@@ -46,7 +46,7 @@ filename:       /lib/modules/6.19.12-1-cachyos/kernel/drivers/accel/amdxdna/amdx
 firmware:       amdnpu/1502_00/npu.sbin
 firmware:       amdnpu/17f0_10/npu.sbin
 firmware:       amdnpu/17f0_11/npu.sbin
-firmware:       amdnpu/17f0_20/npu.sbin
+firmware:       amdnpu/17f0_10/npu.sbin
 intree:         Y
 depends:        gpu-sched
 alias:          pci:v00001022d000017F0sv*sd*bc*sc*i*
@@ -255,7 +255,7 @@ Given the evidence, **Phase 2.1 is a kernel/firmware unblock, not a software int
 
 ### Driver bug report notes
 - Filed `amd/xdna-driver#1257` — POWER_OFF precheck on Strix Point, cold-boot A/B isolating firmware 1.1.2.64 vs 1.0.0.63.
-- Also filed `CachyOS/CachyOS-PKGBUILDS#1311` — linux-firmware-other symlink inversion affecting `amdnpu/17f0_20/` firmware path.
+- Also filed `CachyOS/CachyOS-PKGBUILDS#1311` — linux-firmware-other symlink inversion affecting `amdnpu/17f0_10/` firmware path.
 - Critical correction: initial draft proposed backporting `min_fw_version` from the out-of-tree driver, which was wrong — Lizhi Hou's mainline commit `75c151ceaacf` (merged 2026-02-25) uses a different mechanism (firmware-name fallback to `npu_7.sbin`). Draft rewritten owning the mistake.
 
 ### Implications for AgentSpyBoo
