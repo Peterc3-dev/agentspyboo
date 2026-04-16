@@ -32,6 +32,16 @@ pub struct Cli {
     #[arg(long, global = true, default_value_t = 150)]
     pub httpx_cap: usize,
 
+    /// nuclei URL cap — caps live httpx URLs before nuclei scan (interesting-host heuristic)
+    #[arg(long, global = true, default_value_t = 5)]
+    pub nuclei_cap: usize,
+
+    /// Disable findings deduplication. By default, identical (kind, details)
+    /// findings across multiple targets are folded into one entry with a
+    /// targets[] list. With this flag, every raw finding is emitted verbatim.
+    #[arg(long, global = true, default_value_t = false)]
+    pub no_dedup: bool,
+
     /// Scope allowlist (comma-separated globs, e.g. "example.com,*.example.com").
     /// Default is "<target>,*.<target>".
     #[arg(long, global = true)]
@@ -59,6 +69,8 @@ pub struct Config {
     pub max_iterations: usize,
     pub rate_limit_ms: u64,
     pub httpx_cap: usize,
+    pub nuclei_cap: usize,
+    pub no_dedup: bool,
     pub scope_patterns: Vec<String>,
     pub verbose: bool,
 }
@@ -106,6 +118,8 @@ impl Config {
             max_iterations,
             rate_limit_ms,
             httpx_cap: cli.httpx_cap,
+            nuclei_cap: cli.nuclei_cap,
+            no_dedup: cli.no_dedup,
             scope_patterns,
             verbose: cli.verbose,
         }

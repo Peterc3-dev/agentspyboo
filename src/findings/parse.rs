@@ -71,12 +71,12 @@ pub fn parse_httpx_output(stdout: &str) -> (Vec<String>, Vec<Finding>) {
             title.chars().take(80).collect::<String>(),
             tech.join(", ")
         );
-        findings.push(Finding {
-            severity: sev,
-            kind: "http-probe".into(),
-            target: host,
+        findings.push(Finding::new(
+            sev,
+            "http-probe",
+            host,
             details,
-        });
+        ));
     }
     (live_urls, findings)
 }
@@ -114,12 +114,12 @@ pub fn parse_nuclei_output(stdout: &str) -> Vec<Finding> {
             .unwrap_or("")
             .to_string();
         let details = format!("{name} [{template_id}]");
-        out.push(Finding {
-            severity: Severity::from_str_loose(sev_str),
-            kind: "nuclei".into(),
-            target: matched,
+        out.push(Finding::new(
+            Severity::from_str_loose(sev_str),
+            "nuclei",
+            matched,
             details,
-        });
+        ));
     }
     out
 }

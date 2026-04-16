@@ -33,8 +33,16 @@ pub fn render_report(r: &RunRecord) -> String {
     if r.findings.is_empty() {
         out.push_str("_No findings recorded._\n\n");
     } else {
-        out.push_str("| # | Severity | Type | Target | Details |\n");
-        out.push_str("|---|----------|------|--------|---------|\n");
+        if r.dedup_enabled && r.raw_findings.len() != r.findings.len() {
+            out.push_str(&format!(
+                "_Dedup folded {} raw observations into {} grouped findings. Disable with `--no-dedup`._\n\n",
+                r.raw_findings.len(),
+                r.findings.len()
+            ));
+        }
+        out.push_str("| # | Severity | Type | Targets | Details |\n");
+        out.push_str("|---|----------|------|---------|---------|\n");
+        let mut expand_sections: Vec<(usize, &crate::findings::DedupedFinding)> = Vec::new();
         for (i, f) in r.findings.iter().enumerate() {
             let details_clean = f
                 .details
@@ -43,18 +51,36 @@ pub fn render_report(r: &RunRecord) -> String {
                 .chars()
                 .take(120)
                 .collect::<String>();
-            let target_clean = f.target.replace('|', "\\|");
+            let target_cell = if f.targets.len() == 1 {
+                f.targets[0].replace('|', "\\|")
+            } else {
+                format!("{} targets (x{})", f.targets.len(), f.count)
+            };
             out.push_str(&format!(
                 "| {} | {} {} | {} | {} | {} |\n",
                 i + 1,
                 f.severity.icon(),
                 f.severity.label(),
                 f.kind,
-                target_clean,
+                target_cell,
                 details_clean
             ));
+            if f.targets.len() > 1 {
+                expand_sections.push((i + 1, f));
+            }
         }
         out.push_str("\n");
+        // Per-finding target lists for the collapsed entries.
+        for (idx, f) in expand_sections {
+            out.push_str(&format!(
+                "<details><summary>Finding #{idx} — {} target(s)</summary>\n\n",
+                f.targets.len()
+            ));
+            for t in &f.targets {
+                out.push_str(&format!("- `{t}`\n"));
+            }
+            out.push_str("\n</details>\n\n");
+        }
     }
 
     // Methodology — auto-generated from the chain.
@@ -66,6 +92,14 @@ pub fn render_report(r: &RunRecord) -> String {
          a glob-based target filter on every host before the tool spawns. Rate limiting \
          inserts a floor between iterations.\n\n",
     );
+    if let Some((scanned, live)) = r.nuclei_narrow {
+        out.push_str(&format!(
+            "### Host selection\n\nnuclei was run against **{scanned} of {live}** live hosts, \
+             narrowed from the httpx-live set by an interesting-host heuristic \
+             (status code, tech-stack count, CDN/DNS-only penalty, admin/api/auth keyword bonus). \
+             Override with `--nuclei-cap <n>` to scan more or fewer.\n\n",
+        ));
+    }
     out.push_str("Tool chain executed this run:\n\n");
     if r.tools_fired.is_empty() {
         out.push_str("- _(no tools fired — LLM skipped straight to done)_\n");

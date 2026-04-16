@@ -1,7 +1,7 @@
 // Per-iteration and per-run bookkeeping records. Serialized into the JSON
 // findings file alongside the markdown report.
 
-use crate::findings::Finding;
+use crate::findings::{DedupedFinding, Finding};
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 use serde_json::Value;
@@ -29,9 +29,19 @@ pub struct RunRecord {
     pub scope: Vec<String>,
     pub tools_fired: Vec<String>,
     pub steps: Vec<StepRecord>,
-    pub findings: Vec<Finding>,
+    /// Deduped findings by default. When --no-dedup is set, this holds the
+    /// flat finding rows instead (one Finding per row, targets length == 1).
+    pub findings: Vec<DedupedFinding>,
+    /// Un-deduped flat findings list, preserved so downstream consumers can
+    /// reconstruct the exact per-target observations if dedup collapsed them.
+    pub raw_findings: Vec<Finding>,
+    pub dedup_enabled: bool,
     pub final_summary: String,
     pub next_steps: Vec<String>,
+    /// When nuclei was run on fewer hosts than httpx returned (nuclei_cap pruning).
+    /// Tuple of (nuclei_scanned, httpx_live).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub nuclei_narrow: Option<(usize, usize)>,
 }
 
 pub fn preview(s: &str, n: usize) -> String {

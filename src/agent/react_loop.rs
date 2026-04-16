@@ -6,13 +6,15 @@
 
 use crate::config::{Cli, Config};
 use crate::findings::{
-    extract_hosts_from_subfinder, parse_httpx_output, parse_nuclei_output, Finding, Severity,
+    dedup_findings, extract_hosts_from_subfinder, parse_httpx_output, parse_nuclei_output,
+    DedupedFinding, Finding, Severity,
 };
 use crate::llm::{parse_action, strip_think, system_prompt, AgentAction, ChatMessage, LlmClient};
 use crate::report::render_report;
 use crate::scope::host_in_scope;
 use crate::tools::{
-    exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root, ToolExecution, ToolKind,
+    exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
+    select_interesting_urls, ToolExecution, ToolKind,
 };
 
 use super::state::{preview, RunRecord, StepRecord};
@@ -32,6 +34,11 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     println!("[*] Max iterations: {}", cfg.max_iterations);
     println!("[*] Rate limit    : {}ms", cfg.rate_limit_ms);
     println!("[*] httpx cap     : {}", cfg.httpx_cap);
+    println!("[*] nuclei cap    : {}", cfg.nuclei_cap);
+    println!(
+        "[*] dedup         : {}",
+        if cfg.no_dedup { "off (--no-dedup)" } else { "on" }
+    );
     println!();
 
     // Preflight: refuse if target itself is out of scope.
@@ -66,6 +73,9 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     let mut tools_fired: Vec<String> = Vec::new();
     let mut last_subfinder_hosts: Vec<String> = Vec::new();
     let mut last_httpx_urls: Vec<String> = Vec::new();
+    let mut last_httpx_stdout: String = String::new();
+    // Records whether nuclei was narrowed from a larger httpx pool (for report methodology note).
+    let mut nuclei_narrow_note: Option<(usize, usize)> = None;
     let mut final_summary = String::new();
     let mut next_steps_llm: Vec<String> = Vec::new();
     let mut retry_used = false;
@@ -284,29 +294,77 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         }
                     }
                     ToolKind::Nuclei => {
-                        let raw_urls: Vec<String> = if args
-                            .get("urls_from")
-                            .and_then(|s| s.as_str())
-                            .map(|s| s.eq_ignore_ascii_case("httpx"))
-                            .unwrap_or(false)
-                        {
-                            last_httpx_urls.clone()
-                        } else if let Some(arr) = args.get("urls").and_then(|h| h.as_array()) {
-                            arr.iter()
-                                .filter_map(|v| v.as_str().map(String::from))
-                                .collect()
+                        // Prefer explicit URLs from the LLM; otherwise pull from httpx.
+                        // When falling back to httpx, run the interesting-host
+                        // heuristic so nuclei only scans the top N URLs.
+                        let explicit_urls: Option<Vec<String>> = args
+                            .get("urls")
+                            .and_then(|h| h.as_array())
+                            .map(|arr| {
+                                arr.iter()
+                                    .filter_map(|v| v.as_str().map(String::from))
+                                    .collect()
+                            });
+                        // urls_from is accepted for LLM compatibility but we
+                        // always fall back to httpx when no explicit URLs are
+                        // given — no other source exists in-pipeline.
+                        let _ = args.get("urls_from");
+                        let raw_urls: Vec<String> = if let Some(u) = explicit_urls {
+                            u
                         } else {
                             last_httpx_urls.clone()
                         };
+                        let live_count = last_httpx_urls.len();
                         let before = raw_urls.len();
-                        let urls: Vec<String> = raw_urls
+                        let scoped: Vec<String> = raw_urls
                             .into_iter()
                             .filter(|u| host_in_scope(u, &cfg.scope_patterns))
                             .collect();
-                        let dropped = before - urls.len();
+                        let dropped = before - scoped.len();
                         if dropped > 0 {
                             println!("[!] scope guard: dropped {dropped} out-of-scope urls before nuclei");
                         }
+                        // Select the most-interesting URLs from the raw httpx
+                        // stdout, then intersect with scoped set. If we don't
+                        // have httpx JSON (e.g. LLM gave explicit URLs), just
+                        // take the first `nuclei_cap` in order.
+                        let urls: Vec<String> = if !last_httpx_stdout.is_empty() {
+                            let ranked = select_interesting_urls(
+                                &last_httpx_stdout,
+                                cfg.nuclei_cap.saturating_mul(4),
+                            );
+                            let scoped_set: std::collections::HashSet<String> =
+                                scoped.iter().cloned().collect();
+                            let mut out: Vec<String> = ranked
+                                .into_iter()
+                                .filter(|u| scoped_set.contains(u))
+                                .take(cfg.nuclei_cap)
+                                .collect();
+                            // If heuristic produced fewer than cap (e.g. LLM
+                            // supplied its own URL list not in stdout), fill
+                            // from the scoped list in order.
+                            if out.len() < cfg.nuclei_cap {
+                                for u in &scoped {
+                                    if out.len() >= cfg.nuclei_cap {
+                                        break;
+                                    }
+                                    if !out.contains(u) {
+                                        out.push(u.clone());
+                                    }
+                                }
+                            }
+                            out
+                        } else {
+                            scoped.iter().take(cfg.nuclei_cap).cloned().collect()
+                        };
+                        if live_count > urls.len() {
+                            nuclei_narrow_note = Some((urls.len(), live_count));
+                        }
+                        println!(
+                            "[>] Executing nuclei against {} of {} live hosts (cap via --nuclei-cap, heuristic: status/tech/non-cdn)",
+                            urls.len(),
+                            live_count
+                        );
                         match exec_nuclei(&urls).await {
                             Ok((so, se)) => ToolExecution {
                                 tool: kind,
@@ -354,12 +412,12 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         if exec.error.is_none() {
                             last_subfinder_hosts = extract_hosts_from_subfinder(&exec.stdout);
                             for h in &last_subfinder_hosts {
-                                all_findings.push(Finding {
-                                    severity: Severity::Info,
-                                    kind: "subdomain".into(),
-                                    target: h.clone(),
-                                    details: "discovered via subfinder".into(),
-                                });
+                                all_findings.push(Finding::new(
+                                    Severity::Info,
+                                    "subdomain",
+                                    h.clone(),
+                                    "discovered via subfinder",
+                                ));
                             }
                         }
                     }
@@ -367,6 +425,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         if exec.error.is_none() {
                             let (urls, httpx_findings) = parse_httpx_output(&exec.stdout);
                             last_httpx_urls = urls;
+                            last_httpx_stdout = exec.stdout.clone();
                             all_findings.extend(httpx_findings);
                         }
                     }
@@ -475,8 +534,26 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
         }
     }
 
-    // Sort findings by severity desc for report rendering.
+    // Sort raw findings by severity desc for report rendering.
     all_findings.sort_by(|a, b| b.severity.cmp(&a.severity));
+    let raw_findings_view = all_findings.clone();
+
+    // Dedup (default) or passthrough.
+    let findings_view: Vec<DedupedFinding> = if cfg.no_dedup {
+        all_findings
+            .iter()
+            .map(|f| DedupedFinding {
+                severity: f.severity,
+                kind: f.kind.clone(),
+                targets: vec![f.target.clone()],
+                details: f.details.clone(),
+                count: 1,
+                first_seen: f.first_seen,
+            })
+            .collect()
+    } else {
+        dedup_findings(&all_findings)
+    };
 
     let finished_at = Utc::now();
     let record = RunRecord {
@@ -488,9 +565,12 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
         scope: cfg.scope_patterns.clone(),
         tools_fired: tools_fired.clone(),
         steps,
-        findings: all_findings,
+        findings: findings_view,
+        raw_findings: raw_findings_view,
+        dedup_enabled: !cfg.no_dedup,
         final_summary: final_summary.clone(),
         next_steps: next_steps_llm,
+        nuclei_narrow: nuclei_narrow_note,
     };
 
     let ts = started_at.format("%Y%m%dT%H%M%SZ").to_string();

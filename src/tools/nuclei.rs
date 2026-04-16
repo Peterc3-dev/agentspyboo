@@ -76,3 +76,94 @@ pub async fn exec_nuclei(urls: &[String]) -> Result<(String, String)> {
     }
     Ok((stdout, stderr))
 }
+
+/// Score and select the most "interesting" URLs from raw httpx JSONL for feeding
+/// into nuclei. Nuclei on CPU is the slowest link in the chain — capping the
+/// feed lets us finish in a bounded wall-clock budget.
+///
+/// Heuristic (higher = more interesting):
+///   1. status == 200 outranks 3xx/4xx/5xx
+///   2. more detected tech stacks = bigger footprint
+///   3. DNS-only hosts (mta-sts, _dmarc, autodiscover) deprioritized
+///   4. titles/paths hinting at admin, api, auth, login get a bonus
+///
+/// Returns at most `cap` URLs. Pure function — takes stdout, no side effects.
+pub fn select_interesting_urls(httpx_stdout: &str, cap: usize) -> Vec<String> {
+    use serde_json::Value;
+    use crate::scope::normalize_host;
+
+    #[derive(Default)]
+    struct Row {
+        url: String,
+        score: i32,
+        order: usize,
+    }
+    let mut rows: Vec<Row> = Vec::new();
+    for (idx, line) in httpx_stdout.lines().enumerate() {
+        let line = line.trim();
+        if line.is_empty() || !line.starts_with('{') {
+            continue;
+        }
+        let v: Value = match serde_json::from_str(line) {
+            Ok(v) => v,
+            Err(_) => continue,
+        };
+        let url = v
+            .get("url")
+            .and_then(|x| x.as_str())
+            .unwrap_or("")
+            .to_string();
+        if url.is_empty() {
+            continue;
+        }
+        let status = v
+            .get("status_code")
+            .and_then(|x| x.as_i64())
+            .unwrap_or(0);
+        let title = v
+            .get("title")
+            .and_then(|x| x.as_str())
+            .unwrap_or("")
+            .to_lowercase();
+        let tech_len = v
+            .get("tech")
+            .and_then(|t| t.as_array())
+            .map(|a| a.len())
+            .unwrap_or(0);
+        let host_l = normalize_host(&url);
+
+        let mut score: i32 = 0;
+        score += match status {
+            200..=299 => 30,
+            300..=399 => 10,
+            400..=499 => -5,
+            500..=599 => -10,
+            _ => 0,
+        };
+        score += (tech_len as i32 * 6).min(30);
+        let cdn_noise = ["mta-sts.", "_dmarc.", "_domainkey.", "autodiscover."]
+            .iter()
+            .any(|p| host_l.starts_with(p));
+        if cdn_noise {
+            score -= 40;
+        }
+        let juicy = [
+            "admin", "api", "auth", "login", "signin", "sign in", "internal",
+            "dashboard", "console", "staging", "dev", "jenkins", "grafana",
+            "kibana", "phpmyadmin",
+        ];
+        for kw in juicy {
+            if title.contains(kw) || host_l.contains(kw) {
+                score += 15;
+                break;
+            }
+        }
+        rows.push(Row {
+            url,
+            score,
+            order: idx,
+        });
+    }
+    rows.sort_by(|a, b| b.score.cmp(&a.score).then(a.order.cmp(&b.order)));
+    rows.into_iter().take(cap).map(|r| r.url).collect()
+}
