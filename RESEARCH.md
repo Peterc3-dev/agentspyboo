@@ -5,9 +5,9 @@
 
 ## What this is
 
-A Rust-based AI red team agent targeting AMD Ryzen AI hardware. Currently runs a multi-step ReAct loop on CPU via a local OpenAI-compatible LLM server (Lemonade / llama.cpp). The NPU inference path (the original headline ambition) is parked on a hardware-side driver blocker documented in `PHASE-2-RECON.md`.
+A Rust-based AI red team agent targeting AMD Ryzen AI hardware. Currently runs a multi-step ReAct loop on CPU via a local OpenAI-compatible LLM server (Lemonade / llama.cpp). The NPU inference path is unblocked at the driver level (patched `amdxdna.ko` loads clean on cold boot, `xrt-smi` + `flm validate` green) but blocked at the inference runtime level — FastFlowLM cannot handle protocol-7 opcodes required by Qwen3/GGUF models. See `PHASE-2-RECON.md` addendum.
 
-Framed honestly: **a CPU-path Rust pentest agent that targets NPU inference as a deferred goal.**
+Framed honestly: **a CPU-path Rust pentest agent that targets NPU inference as a deferred goal (driver unblocked, runtime blocked).**
 
 ## Gap analysis (caveated)
 
@@ -30,9 +30,9 @@ That said, AgentSpyBoo does **not currently** combine these three. It combines R
 
 - **GPD Pocket 4** — AMD Ryzen AI 9 HX 370 (Strix Point), Radeon 890M iGPU (gfx1150), XDNA 2 NPU (50 TOPS rated), 32 GB unified memory
 - **Physical:** ~770 g handheld, built-in 2.5 GbE, optional 4G LTE module, optional RS-232 module
-- Current state: CPU inference via llama.cpp runs at ~77 tok/s generation on this chip. NPU path is parked.
+- Current state: CPU inference via llama.cpp runs at ~77 tok/s generation on this chip. NPU driver unblocked (patched `amdxdna.ko`), but FastFlowLM blocked on protocol-7 opcodes — cannot run Qwen3/GGUF models on NPU yet.
 
-## NPU backend research (deferred)
+## NPU backend research (driver unblocked, runtime blocked)
 
 The originally researched NPU path uses **FastFlowLM** — an NPU-native Ollama-style runtime with an OpenAI-compatible API, ~16 MB binary, Linux support added March 2026.
 
@@ -58,7 +58,7 @@ Llama 3.2 3B on the same hardware: **26.3 TPS at 1k context** (published FastFlo
 
 - **amdxdna kernel driver** mainlined in Linux 6.14 (early 2025)
 - **On CachyOS (kernel 6.19.12)**: `fastflowlm 0.9.38` ships in the official `extra` repo. `xrt-smi` and `xrt-plugin-amdxdna` are also packaged.
-- **Current blocker:** the amdxdna driver loads but fails to bind to the NPU at `0000:c6:00.1` with `aie2_smu_init: Access power failed, ret -22`. `/dev/accel` stays empty. Likely root causes (in order): GPD BIOS 2.10 doesn't enable NPU PSP fuses, missing firmware blob `17f0_20` in `/lib/firmware/amdnpu/`, or a kernel regression in 6.19.x. See `PHASE-2-RECON.md`.
+- **Current blocker (updated 2026-04-16):** the amdxdna driver blocker is resolved — a patched `.ko` loads clean on cold boot (`xrt-smi` green, `flm validate` green). The new blocker is FastFlowLM: it cannot handle protocol-7 opcodes used by Qwen3/GGUF models, so NPU inference for AgentSpyBoo's orchestration LLM still doesn't work. When/if `flm` adds protocol-7 support, integration is still a one-line base-URL swap. See `PHASE-2-RECON.md` addendum.
 - **Ubuntu 24.04**: Vitis AI EP builds fail due to GCC 13/14 incompatibilities. Workaround distros (like CachyOS/Arch) have better packaging but hit the same hardware blocker.
 
 ## Existing autonomous pentest agents (for context)

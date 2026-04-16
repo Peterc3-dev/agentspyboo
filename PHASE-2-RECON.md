@@ -1,10 +1,18 @@
 # AgentSpyBoo Phase 2.0 — NPU Reconnaissance Report
 
-**Date:** 2026-04-13
+**Date:** 2026-04-13 (updated 2026-04-16)
 **Target:** GPD Pocket 4, AMD Ryzen AI 9 HX 370, XDNA 2 NPU
 **Purpose:** Determine the fastest viable path to NPU inference for AgentSpyBoo Phase 2.
 
 ## TL;DR
+
+**Driver unblocked, inference runtime still blocked.** A patched `amdxdna.ko` built at `~/builds/amdxdna-patched/` (root-caused by a background agent, POWER_OFF precheck fix for Strix Point) now loads clean on cold boot — `xrt-smi examine` reports the NPU device and `flm validate` passes green. **However, FastFlowLM still fails on actual inference** — it cannot handle protocol-7 opcodes used by the Qwen3/GGUF models we need. The NPU is unblocked at the driver level, blocked at the inference runtime level.
+
+Recommended path remains **FastFlowLM** once it supports the required opcodes. Integration with AgentSpyBoo is a one-line base-URL change. The driver blocker documented below is now resolved; see the addendum at the end for current state.
+
+---
+
+### Original TL;DR (preserved for history)
 
 The Arch/CachyOS NPU stack is unexpectedly mature: `flm` (FastFlowLM v0.9.38), `xrt-smi` (XRT 2.21.75), and the `xrt-plugin-amdxdna` runtime are all packaged in the official `extra` repo and already installed on the GPD, with `llama3.2:1b` pre-pulled. **However the `amdxdna` kernel driver currently fails to bind to the NPU PCI device** (`c6:00.1`) on kernel 6.19.12-1-cachyos with `aie2_smu_init: Access power failed, ret -22` — the SMU power handshake fails, hardware probe aborts, and `xrt-smi examine` reports `0 devices found`. Until that probe error is resolved, *no* NPU runtime can run, regardless of which user-space stack we pick. Recommended path is **FastFlowLM** once the driver binds (one base-URL swap in `src/main.rs` and AgentSpyBoo runs on NPU); the immediate Phase 2.0 blocker is firmware/kernel, not user-space.
 
@@ -228,3 +236,29 @@ Given the evidence, **Phase 2.1 is a kernel/firmware unblock, not a software int
 7. **(15 min)** Document the win in `PHASE-2-NOTES.md`, commit on a new `phase-2.0` branch, and tag.
 
 **Wall clock estimate, assuming the kernel block is unblockable in Linux user-space (i.e. firmware/kernel only): 2-3 hours of focused work.** If the only fix is a BIOS update from GPD that doesn't yet exist, Phase 2.1 is **PARKED until GPD ships a new BIOS**, in which case AgentSpyBoo should be advanced on a different axis (Phase 1.5 polish, mission catalog expansion, output format work) and Phase 2 deferred.
+
+---
+
+## Addendum: Driver Unblocked (2026-04-15)
+
+**Status: NPU unblocked at driver level, blocked at inference runtime level.**
+
+### What changed
+- A background agent root-caused the `aie2_smu_init: Access power failed, ret -22` error: the out-of-tree `amdxdna` driver's POWER_OFF precheck was incorrect for Strix Point (PCI device `17f0`). A patched `.ko` was built at `~/builds/amdxdna-patched/` on the GPD.
+- With the patched driver, `modprobe amdxdna` now binds successfully on cold boot. `xrt-smi examine` reports the NPU device. `flm validate` passes green.
+- Bug filed as `amd/xdna-driver#1257` on GitHub. Max Zhen (AMD) responded with follow-up questions; thread closed from our end after correction (see below).
+
+### What's still blocked
+- **FastFlowLM cannot handle protocol-7 opcodes** used by Qwen3/GGUF models. When `flm serve` attempts inference with these models, it errors on unsupported opcodes. This is a FastFlowLM limitation, not a driver issue.
+- Llama 3.2 1B (protocol-compatible) may work on NPU via `flm serve`, but AgentSpyBoo's orchestration LLM is Qwen3-1.7B-GGUF which requires the unsupported opcodes.
+- Until FastFlowLM adds protocol-7 support (or we switch to a compatible model), NPU inference for AgentSpyBoo remains blocked.
+
+### Driver bug report notes
+- Filed `amd/xdna-driver#1257` — POWER_OFF precheck on Strix Point, cold-boot A/B isolating firmware 1.1.2.64 vs 1.0.0.63.
+- Also filed `CachyOS/CachyOS-PKGBUILDS#1311` — linux-firmware-other symlink inversion affecting `amdnpu/17f0_20/` firmware path.
+- Critical correction: initial draft proposed backporting `min_fw_version` from the out-of-tree driver, which was wrong — Lizhi Hou's mainline commit `75c151ceaacf` (merged 2026-02-25) uses a different mechanism (firmware-name fallback to `npu_7.sbin`). Draft rewritten owning the mistake.
+
+### Implications for AgentSpyBoo
+- Phase 2 CPU track continues as the active path (Lemonade Server, Qwen3-1.7B-GGUF on CPU).
+- NPU path is no longer driver-blocked — it's FastFlowLM-blocked. When/if `flm` adds protocol-7 support, integration is still a one-line base-URL swap.
+- The patched `.ko` is not in the mainline kernel. Cold-booting requires `modprobe` with the patched module each boot until the fix is upstream.
