@@ -1,15 +1,14 @@
-// AgentSpyBoo — Phase 2 (CPU-track)
+// AgentSpyBoo — Phase 3 (CPU-track + Pius org-level preflight)
 //
 // Multi-step ReAct loop with three chained tools (subfinder -> httpx -> nuclei).
-// Scope allowlist, per-iteration rate limit, severity-rated findings, and a
-// markdown report that matches the ai-redteam-reports/ format.
+// Optional org-level preflight via Pius (--org flag) discovers domains + CIDRs
+// before the agent loop starts. The LLM never sees Pius — it just gets a
+// richer subfinder seed list on iteration 1.
 //
-// Phase 2 NPU inference (ort + Vitis) — driver unblocked, runtime blocked —
-// see PHASE-2-RECON.md. This file is the CPU-track Phase 2.
-//
-// Module layout (Phase 2.5 refactor):
+// Module layout:
 //   config       — CLI definition + env var resolution
 //   scope        — glob-based target allowlist
+//   preflight/   — Pius org-level recon (runs before the agent loop)
 //   llm/         — OpenAI-compatible chat client, parser, prompt templates
 //   tools/       — ToolKind dispatch + subfinder/httpx/nuclei wrappers
 //   findings/    — Severity, Finding, tool-output parsers
@@ -20,6 +19,7 @@ mod agent;
 mod config;
 mod findings;
 mod llm;
+mod preflight;
 mod report;
 mod scope;
 mod tools;
@@ -34,6 +34,6 @@ use crate::config::{Cli, Cmd};
 async fn main() -> Result<()> {
     let cli = Cli::parse();
     match &cli.cmd {
-        Cmd::Recon { domain } => run_recon(&cli, domain).await,
+        Cmd::Recon { domain, .. } => run_recon(&cli, domain).await,
     }
 }

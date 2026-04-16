@@ -2,9 +2,24 @@
 // findings file alongside the markdown report.
 
 use crate::findings::{DedupedFinding, Finding};
+use crate::preflight::{PiusCidr, PiusDomain, PiusGithubOrg};
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 use serde_json::Value;
+
+#[derive(Debug, Serialize)]
+pub struct PreflightReport {
+    pub org: String,
+    pub asn: Option<String>,
+    pub mode: String,
+    pub runtime_secs: f64,
+    pub total_raw: usize,
+    pub filtered_out: usize,
+    pub plugins_fired: Vec<String>,
+    pub domains: Vec<PiusDomain>,
+    pub cidrs: Vec<PiusCidr>,
+    pub github_orgs: Vec<PiusGithubOrg>,
+}
 
 #[derive(Debug, Serialize)]
 pub struct StepRecord {
@@ -42,6 +57,9 @@ pub struct RunRecord {
     /// Tuple of (nuclei_scanned, httpx_live).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub nuclei_narrow: Option<(usize, usize)>,
+    /// Pius org-level preflight results (populated when --org is set).
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preflight: Option<PreflightReport>,
 }
 
 pub fn preview(s: &str, n: usize) -> String {

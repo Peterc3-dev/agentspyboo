@@ -1,26 +1,25 @@
-// Locate a Go-bin tool, preferring $PATH, falling back to $HOME/go/bin.
+// Locate a Go-bin tool. Prefers $HOME/go/bin for projectdiscovery binaries
+// (subfinder/httpx/nuclei) since $HOME/.local/bin often shadows them with
+// unrelated Python CLIs of the same name (e.g. encode/httpx the HTTP client).
 
 use anyhow::{bail, Result};
 use std::path::PathBuf;
 
 pub fn locate_bin(name: &str) -> Result<String> {
+    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/raz".into());
+    let go_candidate = format!("{}/go/bin/{}", home, name);
+    if std::path::Path::new(&go_candidate).exists() {
+        return Ok(go_candidate);
+    }
     if let Some(p) = which(name) {
         return Ok(p);
     }
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/raz".into());
-    let candidate = format!("{}/go/bin/{}", home, name);
-    if std::path::Path::new(&candidate).exists() {
-        return Ok(candidate);
-    }
-    bail!("{name} not found on PATH or in ~/go/bin")
+    bail!("{name} not found in ~/go/bin or on PATH")
 }
 
 fn which(name: &str) -> Option<String> {
-    let home = std::env::var("HOME").unwrap_or_else(|_| "/home/raz".into());
-    let go_bin = format!("{}/go/bin", home);
     let path = std::env::var_os("PATH")?;
-    let mut dirs: Vec<PathBuf> = std::env::split_paths(&path).collect();
-    dirs.push(PathBuf::from(go_bin));
+    let dirs: Vec<PathBuf> = std::env::split_paths(&path).collect();
     for dir in dirs {
         let candidate = dir.join(name);
         if candidate.is_file() {

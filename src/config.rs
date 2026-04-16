@@ -58,6 +58,16 @@ pub enum Cmd {
     Recon {
         /// Target domain (e.g. example.com)
         domain: String,
+
+        /// Organization name for Pius preflight recon (e.g. "GitLab").
+        /// When set, runs org-level discovery before the tool chain.
+        #[arg(long)]
+        org: Option<String>,
+
+        /// ASN hint for CIDR discovery (e.g. "AS57787").
+        /// Pius CIDR discovery is sparse without this.
+        #[arg(long)]
+        asn: Option<String>,
     },
 }
 
@@ -73,6 +83,8 @@ pub struct Config {
     pub no_dedup: bool,
     pub scope_patterns: Vec<String>,
     pub verbose: bool,
+    pub org: Option<String>,
+    pub asn: Option<String>,
 }
 
 impl Config {
@@ -111,6 +123,10 @@ impl Config {
             .map(|s| s.trim().to_lowercase())
             .filter(|s| !s.is_empty())
             .collect();
+        // Extract org/asn from the Recon subcommand if present
+        let (org, asn) = match &cli.cmd {
+            Cmd::Recon { org, asn, .. } => (org.clone(), asn.clone()),
+        };
         Self {
             model,
             base_url,
@@ -122,6 +138,8 @@ impl Config {
             no_dedup: cli.no_dedup,
             scope_patterns,
             verbose: cli.verbose,
+            org,
+            asn,
         }
     }
 }

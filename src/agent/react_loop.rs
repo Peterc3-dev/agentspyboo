@@ -10,7 +10,10 @@ use crate::findings::{
     DedupedFinding, Finding, Severity,
 };
 use crate::llm::{parse_action, strip_think, system_prompt, AgentAction, ChatMessage, LlmClient};
+use crate::preflight::run_pius;
 use crate::report::render_report;
+
+use super::state::PreflightReport;
 use crate::scope::host_in_scope;
 use crate::tools::{
     exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
@@ -27,8 +30,14 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     let cfg = Config::resolve(cli, domain);
     let scope_display = cfg.scope_patterns.join(", ");
 
-    println!("[*] AgentSpyBoo Phase 2 (CPU-track)");
+    println!("[*] AgentSpyBoo Phase 3 (CPU-track + Pius preflight)");
     println!("[*] Target        : {domain}");
+    if let Some(ref org) = cfg.org {
+        println!("[*] Org           : {org}");
+    }
+    if let Some(ref asn) = cfg.asn {
+        println!("[*] ASN           : {asn}");
+    }
     println!("[*] Scope         : {scope_display}");
     println!("[*] LLM           : {} ({})", cfg.model, cfg.base_url);
     println!("[*] Max iterations: {}", cfg.max_iterations);
@@ -72,6 +81,72 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     let mut all_findings: Vec<Finding> = Vec::new();
     let mut tools_fired: Vec<String> = Vec::new();
     let mut last_subfinder_hosts: Vec<String> = Vec::new();
+    let mut preflight_report: Option<PreflightReport> = None;
+
+    // --- Pius preflight (runs before the agent loop if --org is set) ---
+    if let Some(ref org) = cfg.org {
+        println!("[*] Running Pius org-level preflight for {org:?}...");
+        match run_pius(
+            org,
+            Some(domain),
+            cfg.asn.as_deref(),
+            &cfg.scope_patterns,
+            cfg.verbose,
+        )
+        .await
+        {
+            Ok(result) => {
+                println!(
+                    "[+] Pius: {} domains, {} CIDRs, {} github orgs ({:.1}s)",
+                    result.domains.len(),
+                    result.cidrs.len(),
+                    result.github_orgs.len(),
+                    result.runtime_secs,
+                );
+                // Pre-seed subfinder host list with Pius-discovered domains
+                for d in &result.domains {
+                    if !last_subfinder_hosts.contains(&d.host) {
+                        last_subfinder_hosts.push(d.host.clone());
+                    }
+                }
+                // CIDRs go directly to findings as severity::Low
+                for cidr in &result.cidrs {
+                    let asn_suffix = cidr
+                        .asn
+                        .as_deref()
+                        .map(|a| format!(", asn: {a}"))
+                        .unwrap_or_default();
+                    all_findings.push(Finding::new(
+                        Severity::Low,
+                        "cidr-discovered",
+                        &cidr.cidr,
+                        format!(
+                            "CIDR block discovered via Pius (source: {}{asn_suffix})",
+                            cidr.source
+                        ),
+                    ));
+                }
+                preflight_report = Some(PreflightReport {
+                    org: org.clone(),
+                    asn: cfg.asn.clone(),
+                    mode: "passive".into(),
+                    runtime_secs: result.runtime_secs,
+                    total_raw: result.total_raw,
+                    filtered_out: result.filtered_out,
+                    plugins_fired: result.plugins_fired,
+                    domains: result.domains,
+                    cidrs: result.cidrs,
+                    github_orgs: result.github_orgs,
+                });
+                println!();
+            }
+            Err(e) => {
+                eprintln!("[!] Pius preflight failed: {e}");
+                eprintln!("[!] Continuing without org-level recon.");
+                println!();
+            }
+        }
+    }
     let mut last_httpx_urls: Vec<String> = Vec::new();
     let mut last_httpx_stdout: String = String::new();
     // Records whether nuclei was narrowed from a larger httpx pool (for report methodology note).
@@ -571,6 +646,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
         final_summary: final_summary.clone(),
         next_steps: next_steps_llm,
         nuclei_narrow: nuclei_narrow_note,
+        preflight: preflight_report,
     };
 
     let ts = started_at.format("%Y%m%dT%H%M%SZ").to_string();
