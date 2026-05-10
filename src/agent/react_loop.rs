@@ -14,10 +14,11 @@ use crate::preflight::run_pius;
 use crate::report::render_report;
 
 use super::state::PreflightReport;
-use crate::scope::host_in_scope;
+use crate::scope::{host_in_scope, normalize_host};
 use crate::tools::{
-    exec_dnsx, exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
-    parse_dnsx_output, select_interesting_urls, ToolExecution, ToolKind,
+    exec_dnsx, exec_ffuf, exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
+    parse_dnsx_output, parse_ffuf_output, resolve_wordlist, select_interesting_urls,
+    ToolExecution, ToolKind,
 };
 
 use super::state::{preview, RunRecord, StepRecord};
@@ -63,7 +64,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     let llm = LlmClient::new(&cfg.base_url, &cfg.model, &cfg.api_key);
     let started_at = Utc::now();
 
-    let sys = system_prompt(domain, &scope_display);
+    let sys = system_prompt(domain, &scope_display, cfg.active);
     let mut messages: Vec<ChatMessage> = vec![
         ChatMessage {
             role: "system".into(),
@@ -502,6 +503,74 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                             },
                         }
                     }
+                    ToolKind::Ffuf => {
+                        // Active mode: ffuf must pick one live URL at a time.
+                        // Prefer the LLM's explicit "url" arg; otherwise fall
+                        // back to the first scoped URL from last httpx run.
+                        let llm_url = args
+                            .get("url")
+                            .and_then(|u| u.as_str())
+                            .map(String::from);
+                        let target_url = llm_url.unwrap_or_else(|| {
+                            last_httpx_urls
+                                .iter()
+                                .find(|u| host_in_scope(u, &cfg.scope_patterns))
+                                .cloned()
+                                .unwrap_or_default()
+                        });
+                        if target_url.is_empty() {
+                            ToolExecution {
+                                tool: kind,
+                                args: args.clone(),
+                                stdout: String::new(),
+                                stderr: String::new(),
+                                error: Some("no URL supplied and no live httpx URL available".into()),
+                                duration_ms: t0.elapsed().as_millis(),
+                            }
+                        } else if !host_in_scope(&target_url, &cfg.scope_patterns) {
+                            println!("[!] scope guard: ffuf URL '{target_url}' not in scope, skipping");
+                            ToolExecution {
+                                tool: kind,
+                                args: args.clone(),
+                                stdout: String::new(),
+                                stderr: String::new(),
+                                error: Some(format!("out-of-scope ffuf URL '{target_url}'")),
+                                duration_ms: t0.elapsed().as_millis(),
+                            }
+                        } else {
+                            match resolve_wordlist(cfg.ffuf_wordlist.as_deref()) {
+                                Ok((wl, _is_tmp)) => {
+                                    println!("[>] ffuf path-fuzzing {} (wordlist: {})", target_url, wl.display());
+                                    match exec_ffuf(&target_url, &wl).await {
+                                        Ok((so, se)) => ToolExecution {
+                                            tool: kind,
+                                            args: args.clone(),
+                                            stdout: so,
+                                            stderr: se,
+                                            error: None,
+                                            duration_ms: t0.elapsed().as_millis(),
+                                        },
+                                        Err(e) => ToolExecution {
+                                            tool: kind,
+                                            args: args.clone(),
+                                            stdout: String::new(),
+                                            stderr: String::new(),
+                                            error: Some(format!("{e:#}")),
+                                            duration_ms: t0.elapsed().as_millis(),
+                                        },
+                                    }
+                                }
+                                Err(e) => ToolExecution {
+                                    tool: kind,
+                                    args: args.clone(),
+                                    stdout: String::new(),
+                                    stderr: String::new(),
+                                    error: Some(format!("wordlist resolve failed: {e:#}")),
+                                    duration_ms: t0.elapsed().as_millis(),
+                                },
+                            }
+                        }
+                    }
                 };
 
                 let line_count = exec.stdout.lines().filter(|l| !l.trim().is_empty()).count();
@@ -553,6 +622,20 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                             all_findings.extend(n);
                         }
                     }
+                    ToolKind::Ffuf => {
+                        if exec.error.is_none() {
+                            // Pull the host out of the URL string the LLM
+                            // passed (or fall back to the target). Cheap
+                            // string parse — avoids pulling in the url crate.
+                            let host = args
+                                .get("url")
+                                .and_then(|u| u.as_str())
+                                .map(normalize_host)
+                                .unwrap_or_else(|| domain.to_string());
+                            let f = parse_ffuf_output(&exec.stdout, &host);
+                            all_findings.extend(f);
+                        }
+                    }
                 }
 
                 // Feed a SLIM observation back to the LLM. Full httpx/nuclei JSON
@@ -602,6 +685,16 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                             format!(
                                 "nuclei scan complete: {} JSONL lines, {} parsed findings. Next step should be done.",
                                 line_count, n
+                            )
+                        }
+                        ToolKind::Ffuf => {
+                            let n = all_findings
+                                .iter()
+                                .filter(|f| f.kind == "ffuf")
+                                .count();
+                            format!(
+                                "ffuf path-fuzz complete: {} parsed findings. Next step should be done unless you want to fuzz another live host.",
+                                n
                             )
                         }
                     };

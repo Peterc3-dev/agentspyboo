@@ -68,6 +68,24 @@ pub enum Cmd {
         /// Pius CIDR discovery is sparse without this.
         #[arg(long)]
         asn: Option<String>,
+
+        /// Enable active recon mode. When set, ffuf is exposed to the LLM
+        /// for content discovery on live URLs. Real outbound traffic — only
+        /// run against authorized scope. Prints a confirmation banner unless
+        /// --yes or AGENTSPYBOO_ACTIVE_CONFIRMED=1.
+        #[arg(long, default_value_t = false)]
+        active: bool,
+
+        /// Skip the active-mode confirmation prompt. Same effect as setting
+        /// AGENTSPYBOO_ACTIVE_CONFIRMED=1.
+        #[arg(long, short = 'y', default_value_t = false)]
+        yes: bool,
+
+        /// Path to ffuf wordlist. Defaults to a bundled ~100-entry mini list
+        /// (assets/ffuf-common-mini.txt). Pass a SecLists path or similar for
+        /// deeper coverage at the cost of runtime.
+        #[arg(long)]
+        ffuf_wordlist: Option<String>,
     },
 }
 
@@ -85,6 +103,8 @@ pub struct Config {
     pub verbose: bool,
     pub org: Option<String>,
     pub asn: Option<String>,
+    pub active: bool,
+    pub ffuf_wordlist: Option<String>,
 }
 
 impl Config {
@@ -123,9 +143,20 @@ impl Config {
             .map(|s| s.trim().to_lowercase())
             .filter(|s| !s.is_empty())
             .collect();
-        // Extract org/asn from the Recon subcommand if present
-        let (org, asn) = match &cli.cmd {
-            Cmd::Recon { org, asn, .. } => (org.clone(), asn.clone()),
+        // Extract recon-subcommand fields if present
+        let (org, asn, active, ffuf_wordlist) = match &cli.cmd {
+            Cmd::Recon {
+                org,
+                asn,
+                active,
+                ffuf_wordlist,
+                ..
+            } => (
+                org.clone(),
+                asn.clone(),
+                *active,
+                ffuf_wordlist.clone(),
+            ),
         };
         Self {
             model,
@@ -140,6 +171,8 @@ impl Config {
             verbose: cli.verbose,
             org,
             asn,
+            active,
+            ffuf_wordlist,
         }
     }
 }

@@ -8,6 +8,9 @@ pub enum ToolKind {
     Subfinder,
     Httpx,
     Nuclei,
+    /// Active recon: ffuf path fuzzing. Only exposed to the LLM when
+    /// --active is set. See src/tools/ffuf.rs for safety posture.
+    Ffuf,
 }
 
 impl ToolKind {
@@ -16,6 +19,7 @@ impl ToolKind {
             ToolKind::Subfinder => "subfinder",
             ToolKind::Httpx => "httpx",
             ToolKind::Nuclei => "nuclei",
+            ToolKind::Ffuf => "ffuf",
         }
     }
 
@@ -24,6 +28,7 @@ impl ToolKind {
             "subfinder" => Some(ToolKind::Subfinder),
             "httpx" => Some(ToolKind::Httpx),
             "nuclei" => Some(ToolKind::Nuclei),
+            "ffuf" => Some(ToolKind::Ffuf),
             _ => None,
         }
     }
@@ -33,6 +38,9 @@ impl ToolKind {
             ToolKind::Subfinder => Duration::from_secs(90),
             ToolKind::Httpx => Duration::from_secs(180),
             ToolKind::Nuclei => Duration::from_secs(900),
+            // ffuf is per-host; ~100-entry wordlist at 20 rps = ~5s, but allow
+            // headroom for slow targets and large user-supplied wordlists.
+            ToolKind::Ffuf => Duration::from_secs(300),
         }
     }
 }
