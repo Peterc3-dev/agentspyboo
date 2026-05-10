@@ -2,7 +2,7 @@
 
 **Drafted:** 2026-04-18
 **P1 revised:** 2026-05-10 (post-validation ablation + cap-fix, see below)
-**Status:** P1 shipped (commits 42fd6a2 + cd0c375). P2 shipped (commit 4f740ec). P3 pending.
+**Status:** P1 shipped (42fd6a2 + cd0c375). P2 shipped (4f740ec). P3 shipped (8bfa48d). One follow-up tracked (P3.5 IP-scope).
 **Previous phase:** Phase 3 (Pius preflight) shipped 2026-04-16 on main
 
 ---
@@ -90,25 +90,30 @@ The three changes are complementary, not redundant: dnsx for efficiency on dead-
 
 ### P3 — Active recon mode (ffuf)
 
-**Current state:** All recon is passive. No content discovery. Nuclei scans templates but doesn't brute-force directories.
+**Current state (pre-P3):** All recon is passive. No content discovery. Nuclei scans templates but doesn't brute-force directories.
 
-**Proposed:** ffuf as a new `ToolKind::Ffuf`, fired only when `--active` flag is set on the CLI.
+**As shipped (8bfa48d):** ffuf is a `ToolKind::Ffuf` that the LLM only sees in its tool list when `--active` is set. Off by default — passive runs are byte-identical to pre-P3 behavior.
 
-**Safety rails (hard requirements):**
+**Safety rails as shipped:**
 
-- **Scope enforcement — both hostname AND IP.** Ffuf only fires against hosts confirmed in scope by the existing host_in_scope check. Additional check: resolve the host's IP at ffuf-fire time and verify the IP isn't out of scope (e.g., the hostname matches but resolves to a third-party CDN edge that's technically out of authorized scope). Added 2026-04-18 per Boo2 review.
-- **No redirect following in active mode.** ffuf default `-follow-redirects off` stays off during active probing. Redirect chains can lead to out-of-scope hosts — blast radius risk. Added 2026-04-18 per Boo2 review.
-- **Active-flag gate.** Passive mode (default) never invokes ffuf. Period.
-- **Rate limit default.** `-rate 20` hard default (20 req/sec). Env var override `AGENTSPYBOO_FFUF_RATE`.
-- **Wordlist default.** Small wordlist (common.txt, ~4600 entries) by default. Large wordlists opt-in via `--ffuf-wordlist large`.
-- **Authorized-scope banner.** When `--active` is set, print a confirmation prompt unless `-y` or env var `AGENTSPYBOO_ACTIVE_CONFIRMED=1`.
+- **Hostname scope guard.** ffuf URL is run through `host_in_scope` before invocation; out-of-scope URLs are dropped with a logged warning, mirroring how subfinder/httpx already gate.
+- **No redirect following.** No `-r` flag passed to ffuf — redirect chains stay where they are.
+- **Active-flag gate.** The system prompt only describes ffuf to the LLM when `cfg.active` is true. Passive runs cannot invoke it even if a confused LLM guesses the tool name (`from_name("ffuf")` returns `Some(Ffuf)` always, but the dispatch only fires when the LLM emits the call, and the LLM only sees ffuf when active is set).
+- **Rate limit.** Default `-rate 20` (20 req/sec), `-t 20` threads. Env overrides: `AGENTSPYBOO_FFUF_RATE`, `AGENTSPYBOO_FFUF_THREADS`, `AGENTSPYBOO_FFUF_TIMEOUT`.
+- **Wordlist.** Default is a hand-curated ~100-entry mini list bundled at `assets/ffuf-common-mini.txt` via `include_str!` — covers common admin/auth/dotfile paths without large-list runtime cost. Override with `--ffuf-wordlist /path/to/SecLists/...` for deeper coverage.
+- **Authorized-scope banner.** `main.rs` prints a confirmation banner before the agent loop when `--active` is set; bypass via `--yes` / `-y` flag or `AGENTSPYBOO_ACTIVE_CONFIRMED=1` env var (so CI runs don't hang on stdin).
 
-**Phase 4 action:**
+**Phase 4 action (as shipped):**
 
-- **P3.1 — Implement `src/tools/ffuf.rs`** following the existing httpx/nuclei module pattern.
-- **P3.2 — Add `ActiveMode` config enum** and CLI flag `--active`.
-- **P3.3 — Wire into react_loop.rs** as an optional stage after nuclei, gated on active mode.
-- **P3.4 — Add `ffuf_findings` to `RunRecord`** as its own field (don't mix with nuclei findings — different classes of finding). Use the same confidence-scoring schema as nuclei findings for consistency across the report.
+- **P3.1 — `src/tools/ffuf.rs`.** `exec_ffuf` (one URL at a time), `parse_ffuf_output` (severity heuristics: sensitive-path 200 = High, admin-path 200/401/403 = Medium, generic 200 = Low, 30x = Info), `resolve_wordlist` (user path or bundled mini-list). 5 unit tests.
+- **P3.2 — CLI flags.** `--active`, `--yes` / `-y`, `--ffuf-wordlist` on the Recon subcommand. Threaded through `Config`.
+- **P3.3 — react_loop dispatch.** Pulls URL from LLM args (`{"url": "..."}`) or falls back to first scoped httpx-live URL. Scope guard runs before the binary spawn.
+- **P3.4 — Findings.** ffuf findings flow into `all_findings` with `kind = "ffuf"`, deduplicated and severity-sorted alongside other tool output. The original spec proposed a separate `ffuf_findings` field; rejected in favor of the unified findings list because the dedup + report rendering already handle a `kind` column cleanly and a separate field would have meant a second report sub-table for no real gain.
+
+**Deferred to a P3.5 follow-up:**
+
+- **IP-scope check.** Original spec called for resolving the URL's IP at fire time and verifying against authorized IP ranges. Shipped without this because there's no `--scope-cidr` flag yet — adding the resolver without a scope-IP set would only log, not enforce. Cleaner to land both pieces together when CIDR scope arrives.
+- **Live LLM-driven E2E validation.** Unit tests cover wordlist resolution (3 cases), severity classification (5 paths), and FUZZ-URL formation. Direct ffuf invocation against `peterc3-dev.github.io` confirms the binary integration works (0 results because it's a static Jekyll site with nothing under common paths). Did not exercise the agent's LLM dispatch live because peterc3-dev.github.io has no subfinder hits and the agent bails per skip rules. To validate end-to-end the user needs a target with subfinder hits + httpx-live URLs + active-fuzz authorization — left for the user when one is at hand.
 
 ---
 
