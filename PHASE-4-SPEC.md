@@ -1,8 +1,8 @@
 # AgentSpyBoo Phase 4 — Scoping Spec
 
 **Drafted:** 2026-04-18
-**P1 revised:** 2026-05-10 (post-validation ablation, see below)
-**Status:** P1 shipped (commit 42fd6a2). P2/P3 pending.
+**P1 revised:** 2026-05-10 (post-validation ablation + cap-fix, see below)
+**Status:** P1 shipped (commits 42fd6a2 + cd0c375). P2/P3 pending.
 **Previous phase:** Phase 3 (Pius preflight) shipped 2026-04-16 on main
 
 ---
@@ -30,15 +30,27 @@ Same fresh subfinder list (559 hosts on gitlab.com) across all three. Conclusion
 3. **dnsx saves ~60s wall time** on a list this dead-DNS-heavy (76% NXDOMAIN/SERVFAIL).
 4. **The cap interaction is the real lurking bug.** The cap was meant to prevent runaway probing on enormous lists, but it interacts badly with subfinder's output ordering — ephemeral test/review subdomains cluster near the front of the list, so the cap consistently slices off the dead part. dnsx accidentally fixes this by collapsing the list below the cap threshold before clamping happens, but the right fix is to address the cap+ordering interaction directly (sort or shuffle the list before capping, or drop the cap once dnsx is in place).
 
-**Phase 4 action (as shipped in 42fd6a2):**
+**Phase 4 action (as shipped):**
 
-- **P1.1 — dnsx resolution pass** between subfinder and httpx. Use `dnsx -a -aaaa -cname` so CNAME-only subdomains are preserved. Implemented in `src/tools/dnsx.rs` with a fallback to the unfiltered list when dnsx errors or returns suspiciously low (<2% on >50-host inputs). **Effect: ~60s wall-time savings on dead-DNS-heavy targets, neutral on detection.**
-- **P1.2 — httpx flag tuning.** `-retries 2 -follow-redirects -timeout 15`, `-threads 50` unchanged. **Effect: ~12% live-host detection lift, primarily from follow-redirects.**
-- **P1.3 — Env var tunables.** `AGENTSPYBOO_HTTPX_TIMEOUT`, `AGENTSPYBOO_HTTPX_THREADS`, `AGENTSPYBOO_HTTPX_RETRIES` overrides. Defaults to tuned values.
+- **P1.1 — dnsx resolution pass** between subfinder and httpx. Use `dnsx -a -aaaa -cname` so CNAME-only subdomains are preserved. Implemented in `src/tools/dnsx.rs` with a fallback to the unfiltered list when dnsx errors or returns suspiciously low (<2% on >50-host inputs). Shipped in 42fd6a2. **Effect: ~60s wall-time savings on dead-DNS-heavy targets, neutral on detection.**
+- **P1.2 — httpx flag tuning.** `-retries 2 -follow-redirects -timeout 15`, `-threads 50` unchanged. Shipped in 42fd6a2. **Effect: ~12% live-host detection lift, primarily from follow-redirects.**
+- **P1.3 — Env var tunables.** `AGENTSPYBOO_HTTPX_TIMEOUT`, `AGENTSPYBOO_HTTPX_THREADS`, `AGENTSPYBOO_HTTPX_RETRIES` overrides. Defaults to tuned values. Shipped in 42fd6a2.
+- **P1.4 — Cap-vs-ordering fix.** The `httpx-cap` was slicing off the production half of subfinder's output because subfinder's natural ordering puts long auto-generated subdomains (CI review envs, deploy previews) near the front. `rank_for_cap` in `src/tools/httpx.rs` sorts by length, then depth, then alpha before applying the cap. Length is the primary signal because auto-generated hosts carry hash prefixes / hyphen-stuffed labels; production assets stay short. Shipped in cd0c375 with unit tests. **Effect: +140% live hosts at cap=150 on the dnsx-OFF path (35 → 84); no-op on the dnsx-ON path because dnsx already strips the long ephemerals before cap is applied. This is the resilience layer for when dnsx fails, fallback fires, or future targets where dnsx adds little.**
 
-**Open follow-up for P1:** the `httpx-cap=150` interaction with subfinder ordering is now exposed as a real bug, not the symptom the original spec described. Consider sorting the host list by depth (shallow subdomains first) or by source confidence before capping, or removing the cap entirely now that dnsx pre-filters the list. Tracked separately — not part of P1 close-out.
+**Cap-fix validation (2026-05-10):**
 
-**Validation status:** P1 shipped behaves as the corrected spec describes (efficiency from dnsx, detection from flag tuning). The original "5+/519" win condition was based on a confounded baseline and is retired.
+| Path | Cap | Ordering | Live hosts |
+|---|---|---|---|
+| dnsx-OFF (P1.4 alone) | 150 | raw subfinder | 35 |
+| dnsx-OFF (P1.4 alone) | 150 | length-sorted (P1.4) | 84 |
+| dnsx-ON | 50 | alphabetical (counterfactual) | 48 |
+| dnsx-ON | 50 | length-sorted (P1.4) | 48 |
+
+The three changes are complementary, not redundant: dnsx for efficiency on dead-DNS-heavy targets, flag tuning for detection lift on the surviving hosts, cap-fix for fallback resilience when dnsx is unavailable or doesn't bite.
+
+**Validation status:** P1 shipped behaves as the corrected spec describes. The original "5+/519" win condition was based on a confounded baseline and is retired.
+
+**Side-finding:** `--nuclei-cap 0` cleanly skips the nuclei stage for fast iteration runs (recon-only mode). Useful when validating httpx-side changes without paying the nuclei wall-time cost.
 
 ### P2 — Pius API-key-gated plugins
 
