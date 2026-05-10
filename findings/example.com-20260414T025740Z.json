@@ -1,0 +1,47 @@
+{
+  "target": "example.com",
+  "started_at": "2026-04-14T02:57:40.182813873Z",
+  "finished_at": "2026-04-14T02:59:37.362773331Z",
+  "iterations": 3,
+  "model": "Qwen3-1.7B-GGUF",
+  "steps": [
+    {
+      "iteration": 1,
+      "llm_raw": "{\"tool\": \"subfinder\", \"arguments\": {\"domain\": \"example.com\"}}",
+      "tool": "subfinder",
+      "args": {
+        "domain": "example.com"
+      },
+      "stdout_lines": 22639,
+      "stdout_preview": "alexpigs660.example.com\nalexpigs576.example.com\nvelforok27.example.com\nantonio2.bander.97.example.com\nkakallibi99.example.com\nretropm1111.example.com\ntv1.example.com\nfjughi162.example.com\npagoct486.example.com\nsubielfq86.example.com\nvm30459.example.com\n147-255-227-250.w.example.com\nmeloving4542.example.com\nc.example.com\n147-255-227-145.w.example.com\nsupport253.example.com\ntest135.example.com\nringneo206.example.com\ndmitroanokhin.example.com\nmeson.example.com\nserver-lev4.example.com\nfjughi78.example.com\n31698.example.com\nmivtanke.example.com\nsergey.example.com",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 61208
+    },
+    {
+      "iteration": 2,
+      "llm_raw": "{\"tool\": \"httpx\", \"arguments\": {\"hosts_from\": \"subfinder\"}}",
+      "tool": "httpx",
+      "args": {
+        "hosts_from": "subfinder"
+      },
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 54686
+    },
+    {
+      "iteration": 3,
+      "llm_raw": "{\"action\": \"done\", \"summary\": \"No live subdomains were found for example.com through passive recon.\"}",
+      "tool": "done",
+      "args": null,
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 0
+    }
+  ],
+  "final_summary": "No live subdomains were found for example.com through passive recon."
+}

@@ -1,0 +1,231 @@
+{
+  "target": "hackerone.com",
+  "started_at": "2026-04-14T15:47:14.282988977Z",
+  "finished_at": "2026-04-14T15:52:46.769960328Z",
+  "iterations": 4,
+  "model": "Qwen3-1.7B-GGUF",
+  "scope": [
+    "hackerone.com",
+    "*.hackerone.com"
+  ],
+  "tools_fired": [
+    "subfinder",
+    "httpx"
+  ],
+  "steps": [
+    {
+      "iteration": 1,
+      "llm_raw": "{\"tool\": \"subfinder\", \"arguments\": {\"domain\": \"hackerone.com\"}}",
+      "tool": "subfinder",
+      "args": {
+        "domain": "hackerone.com"
+      },
+      "stdout_lines": 16,
+      "stdout_preview": "mta-sts.managed.hackerone.com\nwebsockets.hackerone.com\ngslink.hackerone.com\nsupport.hackerone.com\ninfo.hackerone.com\ndesign.hackerone.com\ndocs.hackerone.com\nmta-sts.forwarding.hackerone.com\nmta-sts.hackerone.com\na.ns.hackerone.com\nevents.hackerone.com\napi.hackerone.com\nb.ns.hackerone.com\nwww.hackerone.com\nlinks.hackerone.com\ngo.hackerone.com",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 26439
+    },
+    {
+      "iteration": 2,
+      "llm_raw": "{\"tool\": \"httpx\", \"arguments\": {\"hosts_from\": \"subfinder\"}}",
+      "tool": "httpx",
+      "args": {
+        "hosts_from": "subfinder"
+      },
+      "stdout_lines": 10,
+      "stdout_preview": "{\"timestamp\":\"2026-04-14T11:47:43.07464596-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"80\",\"url\":\"http://b.ns.hackerone.com\",\"input\":\"b.ns.hackerone.com\",\"location\":\"https://b.ns.hackerone.com/\",\"title\":\"301 Moved Permanently\",\"scheme\":\"http\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"b.ns.hackerone.com\",\"host_ip\":\"2400:cb00:2049:1::a29f:11f\",\"path\":\"/\",\"time\":\"106.108505ms\",\"a\":[\"162.159.1.31\"],\"aaaa\":[\"2400:cb00:2049:1::a29f:11f\"],\"tech\":[\"Cloudflare\"],\"words\":5,\"lines\":7,\"status_code\":301,\"content_length\":167,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"error\",\"pHash\":0},\"resolvers\":[\"1.0.0.1:53\",\"127.0.0.53:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.115550985-04:00\",\"port\":\"443\",\"url\":\"https://mta-sts.forwarding.hackerone.com\",\"input\":\"mta-sts.forwarding.hackerone.com\",\"title\":\"Page not found · GitHub Pages\",\"scheme\":\"https\",\"webserver\":\"GitHub.com\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"mta-sts.forwarding.hackerone.com\",\"host_ip\":\"2606:50c0:8000::153\",\"path\":\"/\",\"time\":\"240.398185ms\",\"a\":[\"185.199.108.153\",\"185.199.110.153\",\"185.199.109.153\",\"185.199.111.153\"],\"aaaa\":[\"2606:50c0:8000::153\",\"2606:50c0:8001::153\",\"2606:50c0:8002::153\",\"2606:50c0:8003::153\"],\"cname\":[\"hacker0x01.github.io\"],\"tech\":[\"Fastly\",\"GitHub Pages\",\"Varnish\"],\"words\":718,\"lines\":89,\"status_code\":404,\"content_length\":9379,\"failed\":false,\"knowledgebase\":{\"PageType\":\"nonerror\",\"pHash\":0},\"resolvers\":[\"127.0.0.53:53\",\"1.0.0.1:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.128201714-04:00\",\"port\":\"443\",\"url\":\"https://mta-sts.managed.hackerone.com\",\"input\":\"mta-sts.managed.hackerone.com\",\"title\":\"Page not found · GitHub Pages\",\"scheme\":\"https\",\"webserver\":\"GitHub.com\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"mta-sts.managed.hackerone.com\",\"host_ip\":\"2606:50c0:8003::153\",\"path\":\"/\",\"time\":\"250.385619ms\",\"a\":[\"185.199.108.153\",\"185.199.109.153\",\"185.199.110.153\",\"185.199.111.153\"],\"aaaa\":[\"2606:50c0:8001::153\",\"2606:50c0:8002::153\",\"2606:50c0:8003::153\",\"2606:50c0:8000::153\"],\"cname\":[\"hacker0x01.github.io\"],\"tech\":[\"Fastly\",\"GitHub Pages\",\"Varnish\"],\"words\":718,\"lines\":89,\"status_code\":404,\"content_length\":9379,\"failed\":false,\"knowledgebase\":{\"PageType\":\"nonerror\",\"pHash\":0},\"resolvers\":[\"1.0.0.1:53\",\"127.0.0.53:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.131159563-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"80\",\"url\":\"http://a.ns.hackerone.com\",\"input\":\"a.ns.hackerone.com\",\"location\":\"https://a.ns.hackerone.com/\",\"title\":\"301 Moved Permanently\",\"scheme\":\"http\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"a.ns.hackerone.com\",\"host_ip\":\"162.159.0.31\",\"path\":\"/\",\"time\":\"88.994481ms\",\"a\":[\"162.159.0.31\"],\"aaaa\":[\"2400:cb00:2049:1::a29f:1f\"],\"tech\":[\"Cloudflare\"],\"words\":5,\"lines\":7,\"status_code\":301,\"content_length\":167,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"error\",\"pHash\":0},\"resolvers\":[\"1.1.1.1:53\",\"8.8.8.8:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.188296251-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"443\",\"url\":\"https://docs.hackerone.com\",\"input\":\"docs.hackerone.com\",\"location\":\"https://docs.hackerone.com/en/\",\"scheme\":\"https\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"docs.hackerone.com\",\"host_ip\":\"2606:4700:440a::6812:24d6\",\"path\":\"/\",\"time\":\"329.423536ms\",\"a\":[\"104.18.36.214\",\"172.64.151.42\"],\"aaaa\":[\"2606:4700:440a::6812:24d6\",\"2a06:98c1:3106::ac40:972a\"],\"tech\":[\"Cloudflare\",\"HSTS\"],\"words\":0,\"lines\":0,\"status_code\":302,\"content_length\":0,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"other\",\"pHash\":0},\"resolvers\":[\"1.1.1.1:53\",\"1.0.0.1:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.228840955-04:00\",\"port\":\"443\",\"url\":\"https://mta-sts.hackerone.com\",\"input\":\"mta-sts.hackerone.com\",\"title\":\"Page not found · GitHub Pages\",\"scheme\":\"https\",\"webserver\":\"GitHub.com\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"mta-sts.hackerone.com\",\"host_ip\":\"2606:50c0:8001::153\",\"path\":\"/\",\"time\":\"349.580371ms\",\"a\":[\"185.199.110.153\",\"185.199.111.153\",\"185.199.108.153\",\"185.199.109.153\"],\"aaaa\":[\"2606:50c0:8002::153\",\"2606:50c0:8003::153\",\"2606:50c0:8000::153\",\"2606:50c0:8001::153\"],\"cname\":[\"hacker0x01.github.io\"],\"tech\":[\"Fastly\",\"GitHub Pages\",\"Varnish\"],\"words\":718,\"lines\":89,\"status_code\":404,\"content_length\":9379,\"failed\":false,\"knowledgebase\":{\"PageType\":\"nonerror\",\"pHash\":0},\"resolvers\":[\"8.8.4.4:53\",\"127.0.0.53:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.277223763-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"443\",\"url\":\"https://api.hackerone.com\",\"input\":\"api.hackerone.com\",\"title\":\"HackerOne API\",\"scheme\":\"https\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"api.hackerone.com\",\"host_ip\":\"2606:4700:440a::6812:24d6\",\"path\":\"/\",\"time\":\"384.566061ms\",\"a\":[\"172.64.151.42\",\"104.18.36.214\"],\"aaaa\":[\"2606:4700:440a::6812:24d6\",\"2a06:98c1:3106::ac40:972a\"],\"tech\":[\"Algolia\",\"Cloudflare\",\"HSTS\",\"jQuery\",\"jsDelivr\"],\"words\":1731,\"lines\":368,\"status_code\":200,\"content_length\":9126,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"nonerror\",\"pHash\":0},\"resolvers\":[\"8.8.8.8:53\",\"1.1.1.1:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.281601755-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"443\",\"url\":\"https://support.hackerone.com\",\"input\":\"support.hackerone.com\",\"location\":\"https://support.hackerone.com/support/home\",\"scheme\":\"https\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"support.hackerone.com\",\"host_ip\":\"162.159.140.147\",\"path\":\"/\",\"time\":\"421.453465ms\",\"a\":[\"172.66.0.145\",\"162.159.140.147\"],\"cname\":[\"2fe254e58a0ea8096400b2fda121ee35.freshdesk.com\"],\"tech\":[\"Amazon S3\",\"Amazon Web Services\",\"Cloudflare\",\"Cloudflare Bot Management\",\"Envoy\",\"HSTS\"],\"words\":5,\"lines\":1,\"status_code\":302,\"content_length\":108,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"nonerror\",\"pHash\":0},\"resolvers\":[\"127.0.0.53:53\",\"1.0.0.1:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.362887991-04:00\",\"cdn_name\":\"aws\",\"cdn_type\":\"cloud\",\"port\":\"443\",\"url\":\"https://gslink.hackerone.com\",\"input\":\"gslink.hackerone.com\",\"title\":\"404 Not Found\",\"scheme\":\"https\",\"webserver\":\"nginx\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"gslink.hackerone.com\",\"host_ip\":\"2600:9000:2486:2000:1:9f06:1140:93a1\",\"path\":\"/\",\"time\":\"501.835148ms\",\"a\":[\"108.156.85.41\",\"108.156.85.24\",\"108.156.85.32\",\"108.156.85.70\"],\"aaaa\":[\"2600:9000:2486:a200:1:9f06:1140:93a1\",\"2600:9000:2486:2400:1:9f06:1140:93a1\",\"2600:9000:2486:600:1:9f06:1140:93a1\",\"2600:9000:2486:5e00:1:9f06:1140:93a1\",\"2600:9000:2486:5a00:1:9f06:1140:93a1\",\"2600:9000:2486:b400:1:9f06:1140:93a1\",\"2600:9000:2486:ba00:1:9f06:1140:93a1\",\"2600:9000:2486:2000:1:9f06:1140:93a1\"],\"cname\":[\"d3rxkn2g2bbsjp.cloudfront.net\"],\"tech\":[\"Amazon CloudFront\",\"Amazon Web Services\",\"Nginx\"],\"words\":71,\"lines\":13,\"status_code\":404,\"content_length\":548,\"failed\":false,\"knowledgebase\":{\"PageType\":\"error\",\"pHash\":0},\"resolvers\":[\"8.8.8.8:53\"]}\n{\"timestamp\":\"2026-04-14T11:47:43.659470709-04:00\",\"cdn_name\":\"cloudflare\",\"cdn_type\":\"waf\",\"port\":\"443\",\"url\":\"https://www.hackerone.com\",\"input\":\"www.hackerone.com\",\"title\":\"HackerOne | Global leader in offensive security | Security for AI | Crowdsourced Security\",\"scheme\":\"https\",\"webserver\":\"cloudflare\",\"content_type\":\"text/html\",\"method\":\"GET\",\"host\":\"www.hackerone.com\",\"host_ip\":\"2a06:98c1:3106::ac40:972a\",\"path\":\"/\",\"time\":\"279.713773ms\",\"a\":[\"172.64.151.42\",\"104.18.36.214\"],\"aaaa\":[\"2606:4700:440a::6812:24d6\",\"2a06:98c1:3106::ac40:972a\"],\"tech\":[\"Cloudflare\",\"Drupal\",\"Fastly\",\"Google Tag Manager\",\"HSTS\",\"MariaDB\",\"Nginx\",\"PHP\",\"Pantheon\",\"Varnish\",\"jQuery\"],\"words\":60086,\"lines\":3559,\"status_code\":200,\"content_length\":254628,\"failed\":false,\"cdn\":true,\"knowledgebase\":{\"PageType\":\"other\",\"pHash\":0},\"resolvers\":[\"8.8.4.4:53\",\"1.1.1.1:53\"],\"cpe\":[{\"product\":\"webp_server_go\",\"vendor\":\"webp\",\"cpe\":\"cpe:2.3:a:webp:webp_server_go:*:*:*:*:*:*:*:*\"}]}",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 1988
+    },
+    {
+      "iteration": 3,
+      "llm_raw": "{\"tool\": \"nuclei\", \"arguments\": {\"urls_from\": \"httpx\"}}",
+      "tool": "nuclei",
+      "args": {
+        "urls_from": "httpx"
+      },
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": "nuclei timed out after 300s",
+      "duration_ms": 300001
+    },
+    {
+      "iteration": 4,
+      "llm_raw": "{\"action\": \"done\", \"summary\": \"Subfinder found 16 subdomains, httpx confirmed 10 live hosts, but nuclei timed out. No vulnerabilities found within the timeout. Next steps: review the timeout logs, consider increasing the timeout, and re-run nuclei if needed.\", \"next_steps\": [\"re-run nuclei with increased timeout\", \"review timeout logs\", \"check for any missed vulnerabilities\"]}",
+      "tool": "done",
+      "args": null,
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 0
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "b.ns.hackerone.com",
+      "details": "status=301 title=\"301 Moved Permanently\" tech=[Cloudflare]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "mta-sts.forwarding.hackerone.com",
+      "details": "status=404 title=\"Page not found · GitHub Pages\" tech=[Fastly, GitHub Pages, Varnish]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "mta-sts.managed.hackerone.com",
+      "details": "status=404 title=\"Page not found · GitHub Pages\" tech=[Fastly, GitHub Pages, Varnish]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "a.ns.hackerone.com",
+      "details": "status=301 title=\"301 Moved Permanently\" tech=[Cloudflare]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "docs.hackerone.com",
+      "details": "status=302 title=\"\" tech=[Cloudflare, HSTS]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "mta-sts.hackerone.com",
+      "details": "status=404 title=\"Page not found · GitHub Pages\" tech=[Fastly, GitHub Pages, Varnish]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "api.hackerone.com",
+      "details": "status=200 title=\"HackerOne API\" tech=[Algolia, Cloudflare, HSTS, jQuery, jsDelivr]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "support.hackerone.com",
+      "details": "status=302 title=\"\" tech=[Amazon S3, Amazon Web Services, Cloudflare, Cloudflare Bot Management, Envoy, HSTS]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "gslink.hackerone.com",
+      "details": "status=404 title=\"404 Not Found\" tech=[Amazon CloudFront, Amazon Web Services, Nginx]"
+    },
+    {
+      "severity": "low",
+      "kind": "http-probe",
+      "target": "www.hackerone.com",
+      "details": "status=200 title=\"HackerOne | Global leader in offensive security | Security for AI | Crowdsourced\" tech=[Cloudflare, Drupal, Fastly, Google Tag Manager, HSTS, MariaDB, Nginx, PHP, Pantheon, Varnish, jQuery]"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "mta-sts.managed.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "websockets.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gslink.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "support.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "info.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "design.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "docs.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "mta-sts.forwarding.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "mta-sts.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "a.ns.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "events.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "api.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "b.ns.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "links.hackerone.com",
+      "details": "discovered via subfinder"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "go.hackerone.com",
+      "details": "discovered via subfinder"
+    }
+  ],
+  "final_summary": "Subfinder found 16 subdomains, httpx confirmed 10 live hosts, but nuclei timed out. No vulnerabilities found within the timeout. Next steps: review the timeout logs, consider increasing the timeout, and re-run nuclei if needed.",
+  "next_steps": [
+    "re-run nuclei with increased timeout",
+    "review timeout logs",
+    "check for any missed vulnerabilities"
+  ]
+}
