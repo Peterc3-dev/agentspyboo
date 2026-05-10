@@ -1,33 +1,44 @@
 # AgentSpyBoo Phase 4 — Scoping Spec
 
 **Drafted:** 2026-04-18
-**Status:** Draft for review
+**P1 revised:** 2026-05-10 (post-validation ablation, see below)
+**Status:** P1 shipped (commit 42fd6a2). P2/P3 pending.
 **Previous phase:** Phase 3 (Pius preflight) shipped 2026-04-16 on main
 
 ---
 
 ## Three problems to solve
 
-### P1 — The 519→1 httpx efficiency gap
+### P1 — httpx detection + efficiency on dead-DNS-heavy targets
 
-**Symptom:** On the gitlab.com E2E run, subfinder returned 519 subdomains. httpx confirmed 1 live. Ratio 0.19%.
+**Original framing (2026-04-18, since corrected):** the gitlab.com E2E run showed subfinder=519 subdomains, httpx=1 live. The spec read this as a 0.19% efficiency gap and proposed a dnsx pre-filter as the primary fix.
 
-**Probable causes (ranked by likelihood, corrected per Boo2 verification 2026-04-18):**
+**Actual cause (uncovered 2026-05-10):** the 519→1 ratio was largely a `httpx-cap=150` artifact. agentspyboo clamps the subfinder host list to the first 150 hosts before probing. Subfinder's first 150 on gitlab.com are dominated by ephemeral `*-review-*.design-staging.gitlab.com` subdomains that 404 by design, so httpx legitimately found 1 live host *out of the slice it was given*. The full list never got probed at baseline.
 
-httpx defaults (verified): `-timeout 10s`, `-retries 0`, `-follow-redirects off`, `-threads 50`, `-rate-limit 150rps`. Defaults are **aggressive on throughput, fragile on reliability** — not conservative as originally characterized. The 519→1 gap is driven by the reliability side (0 retries, no redirect following, stale DNS) not throughput.
+**What the changes actually do (measured via ablation, 2026-05-10):**
 
-1. No retries on transient failures. A single dropped connection = host recorded as dead.
-2. No redirect following. Subdomains that 301/302 to a canonical host are recorded as non-responsive.
-3. Stale DNS from subfinder sources. Cert-transparency logs list historical subdomains that no longer have public A records. Fix requires dnsx stage between subfinder and httpx.
-4. Genuinely internal/staging subdomains legitimately return nothing over public internet.
+| Condition | dnsx | httpx flags | Live hosts | Wall time |
+|---|---|---|---|---|
+| A: baseline-equivalent | no | old (timeout 10, retries 0, no follow-redirects) | 110 | (fast) |
+| B: flags isolated      | no | new (timeout 15, retries 2, follow-redirects)   | 123 | 165s |
+| C: full P1 stack       | yes | new                                            | 122 | 103s (dnsx 11s + httpx 92s) |
 
-**Phase 4 action:**
+Same fresh subfinder list (559 hosts on gitlab.com) across all three. Conclusions:
 
-- **P1.1 — Add a dnsx resolution pass** between subfinder and httpx. Use `dnsx -a -aaaa -cname` so CNAME-only subdomains (which httpx can still resolve) are preserved — filter only on NXDOMAIN/SERVFAIL. Expected effect: cut probe list from 519 to ~100-150 hosts with actual DNS presence without losing CNAME-resolvable ones.
-- **P1.2 — Tune httpx flags.** Add `-retries 2 -follow-redirects -timeout 15`. Keep default `-threads 50` (already aggressive). The original proposal's `-timeout 10` was a no-op — same as default. `-timeout 15` gives slow/high-latency endpoints more room. Expected effect: +30-50% live host confirmation on the filtered list.
-- **P1.3 — Expose tunables via env vars.** `AGENTSPYBOO_HTTPX_TIMEOUT`, `AGENTSPYBOO_HTTPX_THREADS`, `AGENTSPYBOO_HTTPX_RETRIES`. Default to tuned values; allow override per run.
+1. **dnsx is an efficiency win, not a detection win.** B vs C: 123 vs 122 — flat. Dead-DNS hosts that dnsx drops would have been dropped by httpx anyway; the 426 dropped hosts contribute zero live-host signal in either path.
+2. **httpx flag tuning is the actual detection win.** A vs B: +13 live hosts, ~12%, driven mostly by `-follow-redirects` catching 301/302 chains.
+3. **dnsx saves ~60s wall time** on a list this dead-DNS-heavy (76% NXDOMAIN/SERVFAIL).
+4. **The cap interaction is the real lurking bug.** The cap was meant to prevent runaway probing on enormous lists, but it interacts badly with subfinder's output ordering — ephemeral test/review subdomains cluster near the front of the list, so the cap consistently slices off the dead part. dnsx accidentally fixes this by collapsing the list below the cap threshold before clamping happens, but the right fix is to address the cap+ordering interaction directly (sort or shuffle the list before capping, or drop the cap once dnsx is in place).
 
-**Test target:** rerun gitlab.com E2E after changes. Baseline was 1/519. Win condition: 5+/519.
+**Phase 4 action (as shipped in 42fd6a2):**
+
+- **P1.1 — dnsx resolution pass** between subfinder and httpx. Use `dnsx -a -aaaa -cname` so CNAME-only subdomains are preserved. Implemented in `src/tools/dnsx.rs` with a fallback to the unfiltered list when dnsx errors or returns suspiciously low (<2% on >50-host inputs). **Effect: ~60s wall-time savings on dead-DNS-heavy targets, neutral on detection.**
+- **P1.2 — httpx flag tuning.** `-retries 2 -follow-redirects -timeout 15`, `-threads 50` unchanged. **Effect: ~12% live-host detection lift, primarily from follow-redirects.**
+- **P1.3 — Env var tunables.** `AGENTSPYBOO_HTTPX_TIMEOUT`, `AGENTSPYBOO_HTTPX_THREADS`, `AGENTSPYBOO_HTTPX_RETRIES` overrides. Defaults to tuned values.
+
+**Open follow-up for P1:** the `httpx-cap=150` interaction with subfinder ordering is now exposed as a real bug, not the symptom the original spec described. Consider sorting the host list by depth (shallow subdomains first) or by source confidence before capping, or removing the cap entirely now that dnsx pre-filters the list. Tracked separately — not part of P1 close-out.
+
+**Validation status:** P1 shipped behaves as the corrected spec describes (efficiency from dnsx, detection from flag tuning). The original "5+/519" win condition was based on a confounded baseline and is retired.
 
 ### P2 — Pius API-key-gated plugins
 
