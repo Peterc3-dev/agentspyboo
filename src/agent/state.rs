@@ -2,7 +2,7 @@
 // findings file alongside the markdown report.
 
 use crate::findings::{DedupedFinding, Finding};
-use crate::preflight::{PiusCidr, PiusDomain, PiusGithubOrg};
+use crate::preflight::{PiusCidr, PiusDomain, PiusGithubOrg, PluginKeyStatus};
 use chrono::{DateTime, Utc};
 use serde::Serialize;
 use serde_json::Value;
@@ -16,6 +16,7 @@ pub struct PreflightReport {
     pub total_raw: usize,
     pub filtered_out: usize,
     pub plugins_fired: Vec<String>,
+    pub key_status: Vec<PluginKeyStatus>,
     pub domains: Vec<PiusDomain>,
     pub cidrs: Vec<PiusCidr>,
     pub github_orgs: Vec<PiusGithubOrg>,

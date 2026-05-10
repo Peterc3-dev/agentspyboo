@@ -134,6 +134,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                     total_raw: result.total_raw,
                     filtered_out: result.filtered_out,
                     plugins_fired: result.plugins_fired,
+                    key_status: result.key_status,
                     domains: result.domains,
                     cidrs: result.cidrs,
                     github_orgs: result.github_orgs,

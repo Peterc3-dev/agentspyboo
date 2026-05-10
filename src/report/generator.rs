@@ -100,6 +100,55 @@ pub fn render_report(r: &RunRecord) -> String {
             out.push_str("\n");
         }
 
+        // Key-gated plugin status: render only when there's something
+        // actionable (plugins skipped for missing keys, or fired-but-suboptimal
+        // optional plugins). All-fired-clean is silent — no need to lecture
+        // the user about plugins that worked.
+        let actionable: Vec<&crate::preflight::PluginKeyStatus> = p
+            .key_status
+            .iter()
+            .filter(|s| s.status != "fired")
+            .collect();
+        if !actionable.is_empty() {
+            out.push_str("### Key-gated plugins\n\n");
+            out.push_str("| Plugin | Status | Required env vars | Note |\n");
+            out.push_str("|--------|--------|-------------------|------|\n");
+            for s in &actionable {
+                let status_label = match s.status.as_str() {
+                    "skipped_no_key" => "skipped (key missing)",
+                    "skipped_with_key" => "skipped (key set, plugin silent)",
+                    "fired_optional_no_key" => "fired (no key — degraded)",
+                    other => other,
+                };
+                out.push_str(&format!(
+                    "| `{}` | {} | `{}` | {} |\n",
+                    s.plugin,
+                    status_label,
+                    s.env_vars_required.join(", "),
+                    s.note,
+                ));
+            }
+            out.push_str("\n");
+            let missing_keys: Vec<&str> = actionable
+                .iter()
+                .filter(|s| s.status == "skipped_no_key")
+                .flat_map(|s| {
+                    s.env_vars_required
+                        .iter()
+                        .filter(|v| !s.env_vars_set.contains(v))
+                        .map(String::as_str)
+                })
+                .collect::<std::collections::BTreeSet<_>>()
+                .into_iter()
+                .collect();
+            if !missing_keys.is_empty() {
+                out.push_str(&format!(
+                    "_To enable the skipped plugins, set: `{}`. See `docs/pius-api-keys.md` for free-tier reality._\n\n",
+                    missing_keys.join("`, `")
+                ));
+            }
+        }
+
         out.push_str(
             "_Pius runs once before iteration 1. Passing domains pre-seed the subfinder host \
              list; CIDR blocks feed directly into findings as Severity::Low (`cidr-discovered`). \

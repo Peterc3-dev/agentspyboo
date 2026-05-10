@@ -6,6 +6,122 @@ use tokio::process::Command;
 
 use crate::scope::host_in_scope;
 
+/// Pius plugins gated on environment variables. Pius reads these directly from
+/// its own environment; tokio::process::Command inherits the parent env, so
+/// keys present in agentspyboo's env flow through automatically. This table
+/// only exists for *detection* — telling the user which plugins were skipped
+/// because a required key was missing.
+struct KeyGate {
+    plugin: &'static str,
+    env_vars: &'static [&'static str],
+    /// `true` = plugin fires without the key but works better with it.
+    /// `false` = plugin silently skips when the key is missing.
+    optional: bool,
+    note: &'static str,
+}
+
+const KEY_GATED_PLUGINS: &[KeyGate] = &[
+    KeyGate {
+        plugin: "passive-dns",
+        env_vars: &["SECURITYTRAILS_API_KEY"],
+        optional: false,
+        note: "paid only (SecurityTrails ~$50/mo min)",
+    },
+    KeyGate {
+        plugin: "reverse-whois",
+        env_vars: &["VIEWDNS_API_KEY"],
+        optional: false,
+        note: "free tier available at viewdns.info",
+    },
+    KeyGate {
+        plugin: "apollo",
+        env_vars: &["APOLLO_API_KEY"],
+        optional: false,
+        note: "B2B paid plan only",
+    },
+    KeyGate {
+        plugin: "favicon-hash",
+        env_vars: &["SHODAN_API_KEY"],
+        optional: false,
+        note: "Shodan 100/mo free, burns fast",
+    },
+    KeyGate {
+        plugin: "shodan",
+        env_vars: &["SHODAN_API_KEY"],
+        optional: false,
+        note: "Shodan 100/mo free, burns fast",
+    },
+    KeyGate {
+        plugin: "censys-org",
+        env_vars: &["CENSYS_API_TOKEN"],
+        optional: false,
+        note: "Censys Starter+ plan, ~$100 min credits",
+    },
+    KeyGate {
+        plugin: "github-org",
+        env_vars: &["GITHUB_TOKEN"],
+        optional: true,
+        note: "free personal token, raises rate limit",
+    },
+    KeyGate {
+        plugin: "reverse-ip",
+        env_vars: &["VIEWDNS_API_KEY"],
+        optional: true,
+        note: "free tier; HackerTarget used as fallback when key missing",
+    },
+];
+
+/// Per-plugin reckoning of whether a Pius plugin fired and whether the
+/// required key was present in the environment. Surfaced in the preflight
+/// report so the user can see at a glance which plugins were dark.
+#[derive(Debug, Clone, Serialize)]
+pub struct PluginKeyStatus {
+    pub plugin: String,
+    pub env_vars_required: Vec<String>,
+    pub env_vars_set: Vec<String>,
+    pub fired: bool,
+    pub optional: bool,
+    pub note: String,
+    /// One of: "fired", "fired_optional_no_key", "skipped_no_key",
+    /// "skipped_with_key" (the key was present but the plugin still
+    /// didn't appear — usually a Pius-side error).
+    pub status: String,
+}
+
+fn compute_key_status(plugins_fired: &[String]) -> Vec<PluginKeyStatus> {
+    let fired_set: std::collections::HashSet<&str> =
+        plugins_fired.iter().map(String::as_str).collect();
+    KEY_GATED_PLUGINS
+        .iter()
+        .map(|gate| {
+            let env_set: Vec<String> = gate
+                .env_vars
+                .iter()
+                .filter(|v| std::env::var(v).is_ok())
+                .map(|s| (*s).to_string())
+                .collect();
+            let fired = fired_set.contains(gate.plugin);
+            let all_keys_present = env_set.len() == gate.env_vars.len();
+            let status = match (fired, all_keys_present, gate.optional) {
+                (true, true, _) => "fired",
+                (true, false, true) => "fired_optional_no_key",
+                (true, false, false) => "fired", // shouldn't happen, but trust observation
+                (false, true, _) => "skipped_with_key",
+                (false, false, _) => "skipped_no_key",
+            };
+            PluginKeyStatus {
+                plugin: gate.plugin.to_string(),
+                env_vars_required: gate.env_vars.iter().map(|s| (*s).to_string()).collect(),
+                env_vars_set: env_set,
+                fired,
+                optional: gate.optional,
+                note: gate.note.to_string(),
+                status: status.to_string(),
+            }
+        })
+        .collect()
+}
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "PascalCase")]
 struct PiusRecord {
@@ -58,6 +174,7 @@ pub struct PiusResult {
     pub total_raw: usize,
     pub filtered_out: usize,
     pub plugins_fired: Vec<String>,
+    pub key_status: Vec<PluginKeyStatus>,
     pub runtime_secs: f64,
 }
 
@@ -239,11 +356,25 @@ pub async fn run_pius(
     let mut plugins_fired: Vec<String> = plugins_seen.into_iter().collect();
     plugins_fired.sort();
 
+    let key_status = compute_key_status(&plugins_fired);
+
     if verbose {
         println!(
             "[preflight] pius done in {runtime_secs:.1}s: {} raw, {} filtered, {} domains, {} CIDRs, {} github orgs",
             total_raw, filtered_out, domains.len(), cidrs.len(), github_orgs.len()
         );
+        let skipped_no_key: Vec<&str> = key_status
+            .iter()
+            .filter(|s| s.status == "skipped_no_key")
+            .map(|s| s.plugin.as_str())
+            .collect();
+        if !skipped_no_key.is_empty() {
+            println!(
+                "[preflight] {} key-gated plugin(s) skipped for missing keys: {}",
+                skipped_no_key.len(),
+                skipped_no_key.join(", ")
+            );
+        }
     }
 
     Ok(PiusResult {
@@ -253,6 +384,54 @@ pub async fn run_pius(
         total_raw,
         filtered_out,
         plugins_fired,
+        key_status,
         runtime_secs,
     })
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn clear_known_keys() {
+        for gate in KEY_GATED_PLUGINS {
+            for v in gate.env_vars {
+                std::env::remove_var(v);
+            }
+        }
+    }
+
+    // env var tests share global mutable state, so they are combined into
+    // one sequential test rather than fighting cargo's parallel runner.
+    #[test]
+    fn key_status_classifies_each_plugin_correctly() {
+        clear_known_keys();
+
+        // Phase 1: no keys set, github-org fired anyway, shodan didn't.
+        let fired: Vec<String> = vec!["wayback".into(), "crt-sh".into(), "github-org".into()];
+        let status = compute_key_status(&fired);
+
+        let github = status.iter().find(|s| s.plugin == "github-org").unwrap();
+        assert!(github.fired);
+        assert_eq!(github.status, "fired_optional_no_key");
+
+        let shodan = status.iter().find(|s| s.plugin == "shodan").unwrap();
+        assert!(!shodan.fired);
+        assert_eq!(shodan.status, "skipped_no_key");
+
+        // Phase 2: GITHUB_TOKEN now set; github-org status flips to clean.
+        std::env::set_var("GITHUB_TOKEN", "ghp_fake");
+        let status = compute_key_status(&fired);
+        let github = status.iter().find(|s| s.plugin == "github-org").unwrap();
+        assert_eq!(github.status, "fired");
+
+        // Phase 3: SHODAN_API_KEY set but shodan plugin didn't fire — Pius
+        // saw the key but the plugin produced no records (silent skip).
+        std::env::set_var("SHODAN_API_KEY", "shodan_fake");
+        let status = compute_key_status(&fired);
+        let shodan = status.iter().find(|s| s.plugin == "shodan").unwrap();
+        assert_eq!(shodan.status, "skipped_with_key");
+
+        clear_known_keys();
+    }
 }
