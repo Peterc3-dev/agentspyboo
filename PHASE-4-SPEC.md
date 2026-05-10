@@ -2,7 +2,7 @@
 
 **Drafted:** 2026-04-18
 **P1 revised:** 2026-05-10 (post-validation ablation + cap-fix, see below)
-**Status:** P1 shipped (commits 42fd6a2 + cd0c375). P2/P3 pending.
+**Status:** P1 shipped (commits 42fd6a2 + cd0c375). P2 shipped (commit 4f740ec). P3 pending.
 **Previous phase:** Phase 3 (Pius preflight) shipped 2026-04-16 on main
 
 ---
@@ -76,17 +76,17 @@ The three changes are complementary, not redundant: dnsx for efficiency on dead-
 
 **Censys correction:** single `CENSYS_API_TOKEN` (+ org id), not an ID+secret pair as originally written.
 
-**Phase 4 action:**
+**Phase 4 action (as shipped in 4f740ec):**
 
-- **P2.1 — Env var passthrough** for the full corrected list above. Pius consumes them via its own config flow.
-- **P2.2 — Plugins-skipped detection.** Pius doesn't emit structured "skipped for no key" data. Strategy: parse Pius stderr for skip notices, OR compute the delta between `plugins_expected` (derived from which env vars are set) and `plugins_fired` (from Pius output). Second approach is more robust.
-- **P2.3 — Document cost reality** in `docs/pius-api-keys.md`:
-  - Free and useful: GitHub personal token, ViewDNS free tier
-  - Burns fast: Shodan (100/mo)
-  - Paid only for useful coverage: SecurityTrails, Censys, Apollo, FOFA
-  - Per-service cost table with current pricing snapshot
+- **P2.1 — Env var passthrough.** Already automatic — `tokio::process::Command` inherits the parent env, so any key set in the shell flows through to Pius. No code change required; verified end-to-end.
+- **P2.2 — Plugins-skipped detection.** Took the env-var-delta approach (chosen over stderr parsing, which is brittle). `KEY_GATED_PLUGINS` table in `src/preflight/pius.rs` maps each gated plugin to its required env var(s); `compute_key_status` classifies each as `fired`, `fired_optional_no_key`, `skipped_no_key`, or `skipped_with_key` after Pius returns. Carried through `PreflightReport.key_status` into the markdown report's "Key-gated plugins" sub-section. Renders only when something is actionable — no lecture when everything fired clean.
+- **P2.3 — Cost reality doc** at `docs/pius-api-keys.md`. Honest framing: GITHUB_TOKEN and VIEWDNS_API_KEY are the only meaningful free-tier wins; SHODAN burns fast (100/mo); SecurityTrails/Censys/Apollo/FOFA are paid-only and rarely worth it for free-tier users.
 
-**No code changes to Pius itself.** All changes in `src/preflight/pius.rs` and the env var loader.
+**Validation (2026-05-10):** Ran preflight against `example.com`. Pius fired 3 free plugins (crt-sh, urlscan, wayback) and the new section correctly listed all 8 key-gated plugins as `skipped (key missing)` with their env vars and cost notes. Single combined unit test (env vars are global mutable state — combined to avoid cargo's parallel runner racing the assertions).
+
+**Side-finding logged for future tuning:** dnsx hit its 120s timeout when handed example.com's 22k subfinder output. Worth raising `DNSX_TIMEOUT` or tuning dnsx threading for high-cardinality targets — orthogonal to P2.
+
+**No code changes to Pius itself.** All changes in `src/preflight/pius.rs` (detection table + struct), `src/preflight/mod.rs` (re-export), `src/agent/state.rs` + `src/agent/react_loop.rs` (carry through), `src/report/generator.rs` (rendering).
 
 ### P3 — Active recon mode (ffuf)
 
