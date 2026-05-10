@@ -37,6 +37,11 @@ impl ToolKind {
     }
 }
 
+/// dnsx runs as an internal filter between subfinder and httpx, not as an
+/// LLM-visible ToolKind. It has its own timeout constant here so the tool
+/// module has a single place to update.
+pub const DNSX_TIMEOUT: Duration = Duration::from_secs(120);
+
 pub struct ToolExecution {
     #[allow(dead_code)]
     pub tool: ToolKind,

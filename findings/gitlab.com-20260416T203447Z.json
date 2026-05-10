@@ -1,0 +1,4457 @@
+{
+  "target": "gitlab.com",
+  "started_at": "2026-04-16T20:34:47.453334546Z",
+  "finished_at": "2026-04-16T20:42:25.457760219Z",
+  "iterations": 3,
+  "model": "qwen3:8b",
+  "scope": [
+    "gitlab.com",
+    "*.gitlab.com"
+  ],
+  "tools_fired": [
+    "subfinder"
+  ],
+  "steps": [
+    {
+      "iteration": 1,
+      "llm_raw": "",
+      "tool": null,
+      "args": null,
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": "unparseable; retry requested",
+      "duration_ms": 0
+    },
+    {
+      "iteration": 2,
+      "llm_raw": "{\"tool\": \"subfinder\", \"arguments\": {\"domain\": \"gitlab.com\"}}",
+      "tool": "subfinder",
+      "args": {
+        "domain": "gitlab.com"
+      },
+      "stdout_lines": 536,
+      "stdout_preview": "staging-ref.gitlab.com\nwww.staging.gitlab.com\n4456656-review-dev-1443-u-micvmc.design-staging.gitlab.com\n4456656-review-main-patch-br77mb.design-staging.gitlab.com\n4456656-review-fix-broken-qybukn.design-staging.gitlab.com\nwww.customers.stg.gitlab.com\nforum.gitlab.com\nrunners-cache-2.gitlab.com\ncustomers.staging.gitlab.com\n4456656-review-main-patch-gdpmpv.design-staging.gitlab.com\n4456656-review-update-fea-0m983a.design-staging.gitlab.com\no1.ptr3386.mx.gitlab.com\ngeo.staging.gitlab.com\nrunners-cache-1.gitlab.com\n4456656-review-vs-fix-cod-r1wbfx.design-staging.gitlab.com\nee.gitlab.com\nsupport.gitlab.com\n4456656-review-link-mh9siw.design-staging.gitlab.com\n4456656-review-main-patch-0hbs2y.design-staging.gitlab.com\ncontributors.gitlab.com\ndo158-143.mg.gitlab.com\nalerts.gitlab.com\n4456656-review-feat-add-n-atvmbp.design-staging.gitlab.com\nsingle.gitlab.com\n4456656-review-sselhorn-m-iu1n63.design-staging.gitlab.com",
+      "stderr_preview": "",
+      "error": null,
+      "duration_ms": 39682
+    },
+    {
+      "iteration": 3,
+      "llm_raw": "{\"tool\": \"httpx\", \"arguments\": {\"hosts_from\": \"subfinder\"}}",
+      "tool": "httpx",
+      "args": {
+        "hosts_from": "subfinder"
+      },
+      "stdout_lines": 0,
+      "stdout_preview": "",
+      "stderr_preview": "",
+      "error": "httpx exited Some(2): Usage: httpx [OPTIONS] URL\n\nError: No such option: -s\n",
+      "duration_ms": 286
+    }
+  ],
+  "findings": [
+    {
+      "severity": "low",
+      "kind": "cidr-discovered",
+      "targets": [
+        "91.235.46.0/24"
+      ],
+      "details": "CIDR block discovered via Pius (source: asn-bgp, asn: AS57787)",
+      "count": 1,
+      "first_seen": "2026-04-16T20:36:49.065006046Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "targets": [
+        "staging-ref.gitlab.com",
+        "www.staging.gitlab.com",
+        "4456656-review-dev-1443-u-micvmc.design-staging.gitlab.com",
+        "4456656-review-main-patch-br77mb.design-staging.gitlab.com",
+        "4456656-review-fix-broken-qybukn.design-staging.gitlab.com",
+        "www.customers.stg.gitlab.com",
+        "forum.gitlab.com",
+        "runners-cache-2.gitlab.com",
+        "customers.staging.gitlab.com",
+        "4456656-review-main-patch-gdpmpv.design-staging.gitlab.com",
+        "4456656-review-update-fea-0m983a.design-staging.gitlab.com",
+        "o1.ptr3386.mx.gitlab.com",
+        "geo.staging.gitlab.com",
+        "runners-cache-1.gitlab.com",
+        "4456656-review-vs-fix-cod-r1wbfx.design-staging.gitlab.com",
+        "ee.gitlab.com",
+        "support.gitlab.com",
+        "4456656-review-link-mh9siw.design-staging.gitlab.com",
+        "4456656-review-main-patch-0hbs2y.design-staging.gitlab.com",
+        "contributors.gitlab.com",
+        "do158-143.mg.gitlab.com",
+        "alerts.gitlab.com",
+        "4456656-review-feat-add-n-atvmbp.design-staging.gitlab.com",
+        "single.gitlab.com",
+        "4456656-review-sselhorn-m-iu1n63.design-staging.gitlab.com",
+        "4456656-review-main-patch-zcjz2f.design-staging.gitlab.com",
+        "4456656-review-1107-add-e-53243j.design-staging.gitlab.com",
+        "4456656-review-matejlatin-77kun7.design-staging.gitlab.com",
+        "www.kas.staging.gitlab.com",
+        "www.prometheus.gitlab.com",
+        "explore.gitlab.com",
+        "registry.gke.staging.gitlab.com",
+        "4456656-review-danmh-figm-ecofo8.design-staging.gitlab.com",
+        "4456656-review-759-standa-338g48.design-staging.gitlab.com",
+        "4456656-review-1398-typog-54o4di.design-staging.gitlab.com",
+        "4456656-review-main-patch-hwu1ap.design-staging.gitlab.com",
+        "chef2.gitlab.com",
+        "cocreate.gitlab.com",
+        "levelup.gitlab.com",
+        "4456656-review-viewcompon-kkveh5.design-staging.gitlab.com",
+        "grafana.amp.cells.gitlab.com",
+        "gprd.gitlab.com",
+        "prometheus-3.gitlab.com",
+        "observe.gitlab.com",
+        "4456656-review-1454-clean-24ifbs.design-staging.gitlab.com",
+        "doc.gitlab.com",
+        "4456656-review-jeldergl-m-wl40lx.design-staging.gitlab.com",
+        "dast-4456656-dast-default.design-staging.gitlab.com",
+        "4456656-review-update-ban-zn4m0o.design-staging.gitlab.com",
+        "grafana.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "status.gitlab.com",
+        "version.gitlab.com",
+        "metrics.gitlab.com",
+        "4456656-review-167-broken-qj1ysq.design-staging.gitlab.com",
+        "4456656-review-dmoraberli-v9tcck.design-staging.gitlab.com",
+        "www.canary.gitlab.com",
+        "university.gitlab.com",
+        "4456656-review-glpathupda-ppzo2c.design-staging.gitlab.com",
+        "4456656-review-pgascouvai-1f4bo8.design-staging.gitlab.com",
+        "customers.gitlab.com",
+        "prometheus.db-integration.gitlab.com",
+        "4456656-review-372-remove-g0vjv5.design-staging.gitlab.com",
+        "4456656-review-add-variou-c1mz21.design-staging.gitlab.com",
+        "get.gitlab.com",
+        "4456656-review-cam-x-main-r0jpo8.design-staging.gitlab.com",
+        "4456656-review-tool-versi-qskle9.design-staging.gitlab.com",
+        "www.rocketchat.gitlab.com",
+        "api-staging.community.gitlab.com",
+        "4456656-review-aregnery-r-sii6ch.design-staging.gitlab.com",
+        "4456656-review-katiemacoy-6kowxh.design-staging.gitlab.com",
+        "4456656-review-ld-remove-s98iax.design-staging.gitlab.com",
+        "www.runners-cache-5.gitlab.com",
+        "dr.gitlab.com",
+        "4456656-review-leipert-ad-yv3s6o.design-staging.gitlab.com",
+        "4456656-review-add-radio-thttki.design-staging.gitlab.com",
+        "4456656-review-update-com-fl3uox.design-staging.gitlab.com",
+        "www.gprd.gitlab.com",
+        "www.prometheus-3.gitlab.com",
+        "advisories.gitlab.com",
+        "private-runners-manager-1.gitlab.com",
+        "prometheus-app.db-integration.gitlab.com",
+        "4456656-review-lookbook-e-vm97y9.design-staging.gitlab.com",
+        "4456656-review-v-mishra-m-674soo.design-staging.gitlab.com",
+        "4456656-review-1464-add-p-jxfmxs.design-staging.gitlab.com",
+        "internal.gitlab.com",
+        "opensearch.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "prometheus.gitlab.com",
+        "4456656-review-leipert-pi-ylw4l9.design-staging.gitlab.com",
+        "4456656-review-helping-us-ab9za1.design-staging.gitlab.com",
+        "4456656-review-main-patch-z106gz.design-staging.gitlab.com",
+        "4456656-review-update-inf-chsgkf.design-staging.gitlab.com",
+        "www.alerts.gitlab.com",
+        "staging.gitlab.com",
+        "4456656-review-add-refere-m150sn.design-staging.gitlab.com",
+        "4456656-review-sam-figuer-w6w8ie.design-staging.gitlab.com",
+        "enable.gitlab.com",
+        "ir.gitlab.com",
+        "4456656-review-leipert-so-fnmdgi.design-staging.gitlab.com",
+        "4456656-review-leipert-fi-a93rup.design-staging.gitlab.com",
+        "prometheus-2.gitlab.com",
+        "4456656-review-kbd-styles-3wqnci.design-staging.gitlab.com",
+        "4456656-review-bugfix-loc-qvog2t.design-staging.gitlab.com",
+        "www.runners-cache-3.gitlab.com",
+        "4456656-review-update-neu-l9jugi.design-staging.gitlab.com",
+        "4456656-review-feature-ve-83unpv.design-staging.gitlab.com",
+        "ai-gateway-eks.cloud.gitlab.com",
+        "pre-puma.gitlab.com",
+        "4456656-review-1515-broke-hy4xvx.design-staging.gitlab.com",
+        "4456656-review-frontend-o-k89w9g.design-staging.gitlab.com",
+        "new.docs.gitlab.com",
+        "4456656-review-1532-fix-a-vslnpm.design-staging.gitlab.com",
+        "4456656-review-16-1-ui-ki-igmj3o.design-staging.gitlab.com",
+        "deps.sec.gitlab.com",
+        "4456656-review-main-patch-t8812x.design-staging.gitlab.com",
+        "www.runners-cache-2.gitlab.com",
+        "gslink.gitlab.com",
+        "4456656-review-nadia-sotn-e9wgrt.design-staging.gitlab.com",
+        "4456656-review-mnichols1-tpamws.design-staging.gitlab.com",
+        "4456656-review-main-patch-09hgox.design-staging.gitlab.com",
+        "auth.staging.gitlab.com",
+        "4456656-review-372-migrat-fsc737.design-staging.gitlab.com",
+        "4456656-review-danmh-add-939zv6.design-staging.gitlab.com",
+        "4456656-review-nadia-sotn-oz459g.design-staging.gitlab.com",
+        "opensearch.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "prometheus.staging-ref.gitlab.com",
+        "glchatvertex.prototype.gitlab.com",
+        "4456656-review-alert-upda-7zeoqy.design-staging.gitlab.com",
+        "www.prod.geo.gitlab.com",
+        "triage-serverless.gitlab.com",
+        "4456656-review-main-patch-vs8cmm.design-staging.gitlab.com",
+        "4456656-review-tooltip-fo-4b3dch.design-staging.gitlab.com",
+        "4456656-review-pre-code-s-fryi17.design-staging.gitlab.com",
+        "registry.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "kas.gitlab.com",
+        "4456656-review-leipert-fi-8xvt9u.design-staging.gitlab.com",
+        "geo2.gitlab.com",
+        "4456656-review-feat-typog-iods1d.design-staging.gitlab.com",
+        "4456656-review-1345-story-efzw0t.design-staging.gitlab.com",
+        "4456656-review-rayana-mai-8n3oyd.design-staging.gitlab.com",
+        "4456656-review-update-tab-d7o120.design-staging.gitlab.com",
+        "www.status.gitlab.com",
+        "www.gstg.gitlab.com",
+        "license.gitlab.com",
+        "4456656-review-typo-doc-j-9vr37q.design-staging.gitlab.com",
+        "next.gitlab.com",
+        "4456656-review-526-add-co-hhd4pd.design-staging.gitlab.com",
+        "4456656-review-docs-headi-iwghf9.design-staging.gitlab.com",
+        "cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "scim.gitlab.com",
+        "cinc.gitlab.com",
+        "4456656-review-russell-ad-4deif2.design-staging.gitlab.com",
+        "4456656-review-loadmoregu-u81fud.design-staging.gitlab.com",
+        "4456656-review-main-patch-f6fk1y.design-staging.gitlab.com",
+        "kas.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "4456656-review-fix-main-a8e81c.design-staging.gitlab.com",
+        "www.packages.gitlab.com",
+        "4456656-review-leipert-sw-gx6s02.design-staging.gitlab.com",
+        "4456656-review-storybook-hverfl.design-staging.gitlab.com",
+        "4456656-review-update-ske-mudp9g.design-staging.gitlab.com",
+        "api.community.gitlab.com",
+        "canary.staging.gitlab.com",
+        "4456656-review-fix-punctu-7gmkwg.design-staging.gitlab.com",
+        "4456656-review-372-founda-5ok9gh.design-staging.gitlab.com",
+        "www.pre.gitlab.com",
+        "partners.gitlab.com",
+        "4456656-review-main-patch-ahykfo.design-staging.gitlab.com",
+        "4456656-review-main-patch-6j8uwc.design-staging.gitlab.com",
+        "4456656-review-1384-migra-hi3gz1.design-staging.gitlab.com",
+        "4456656-review-620-preven-sgkdey.design-staging.gitlab.com",
+        "4456656-review-1384-migra-vzug97.design-staging.gitlab.com",
+        "4456656-review-danmh-main-l30vd9.design-staging.gitlab.com",
+        "4456656-review-danmh-line-602hhc.design-staging.gitlab.com",
+        "4456656-review-danmh-main-c1cmm0.design-staging.gitlab.com",
+        "4456656-review-372-cleanu-gim0da.design-staging.gitlab.com",
+        "4456656-review-1581-pajam-ux0aky.design-staging.gitlab.com",
+        "4456656-review-1569-desig-pt069r.design-staging.gitlab.com",
+        "4456656-review-update-key-t4ghhd.design-staging.gitlab.com",
+        "analytics.gitlab.com",
+        "4456656-review-cluster-te-ahlmff.design-staging.gitlab.com",
+        "4456656-review-figure-img-csecdr.design-staging.gitlab.com",
+        "4456656-review-feat-add-d-6hvldh.design-staging.gitlab.com",
+        "email.customers.gitlab.com",
+        "4456656-review-do-not-for-pzqdfc.design-staging.gitlab.com",
+        "www.geo1.gitlab.com",
+        "4456656-review-russell-do-9o5hdr.design-staging.gitlab.com",
+        "4456656-review-monica-gal-s5wit4.design-staging.gitlab.com",
+        "4456656-review-leipert-in-fn9qbu.design-staging.gitlab.com",
+        "errortracking.staging.observe.gitlab.com",
+        "4456656-review-1413-typog-zh5cqo.design-staging.gitlab.com",
+        "4456656-review-stepper-jyhpg9.design-staging.gitlab.com",
+        "support-mw.gitlab.com",
+        "4456656-review-feature-ve-84glmd.design-staging.gitlab.com",
+        "4456656-review-migrate-gl-towhzq.design-staging.gitlab.com",
+        "4456656-review-avoid-cons-9ii5vn.design-staging.gitlab.com",
+        "ce.gitlab.com",
+        "4456656-review-aregnery-t-k27a4t.design-staging.gitlab.com",
+        "kas.staging.gitlab.com",
+        "4456656-review-main-patch-e4eovu.design-staging.gitlab.com",
+        "4456656-review-main-patch-uanp44.design-staging.gitlab.com",
+        "4456656-review-gt-update-7ocwl1.design-staging.gitlab.com",
+        "cloud.staging.gitlab.com",
+        "4456656-review-16-2-fig-b-vkcmpy.design-staging.gitlab.com",
+        "4456656-review-russell-ad-rs1ci4.design-staging.gitlab.com",
+        "4456656-review-danmh-labe-7m5eaz.design-staging.gitlab.com",
+        "archives.docs.gitlab.com",
+        "runners-cache-5.gitlab.com",
+        "4456656-review-amittner-m-nerl7d.design-staging.gitlab.com",
+        "docs.gitlab.com",
+        "4456656-review-1443-updat-77up3w.design-staging.gitlab.com",
+        "4456656-review-1444-link-mzm8ta.design-staging.gitlab.com",
+        "pre.gitlab.com",
+        "4456656-review-lvanc-feat-c4vnls.design-staging.gitlab.com",
+        "4456656-review-markrian-m-2hprzi.design-staging.gitlab.com",
+        "www.support-mw.gitlab.com",
+        "www.chat.gitlab.com",
+        "email.gitlab.com",
+        "4456656-review-aregnery-u-87yayz.design-staging.gitlab.com",
+        "4456656-review-fix-dropdo-pxfde4.design-staging.gitlab.com",
+        "biz.gitlab.com",
+        "cdn.registry.gitlab.com",
+        "4456656-review-todo-issue-mxbz2n.design-staging.gitlab.com",
+        "4456656-review-link-updat-3hh8ij.design-staging.gitlab.com",
+        "4456656-review-work-item-z7jn6r.design-staging.gitlab.com",
+        "4456656-review-monica-gal-oepnqj.design-staging.gitlab.com",
+        "4456656-review-main-patch-htq0lf.design-staging.gitlab.com",
+        "jitsu-server.product-analytics.prototype.gitlab.com",
+        "shared-runners-manager-4.gitlab.com",
+        "registry.staging-ref.gitlab.com",
+        "4456656-review-update-nav-ztnp39.design-staging.gitlab.com",
+        "www.version.gitlab.com",
+        "groove.gitlab.com",
+        "4456656-review-424-docume-1auq3m.design-staging.gitlab.com",
+        "4456656-review-jeldergl-m-6ft9af.design-staging.gitlab.com",
+        "4456656-review-sselhorn-m-5og57p.design-staging.gitlab.com",
+        "www.ci.gitlab.com",
+        "next.staging.gitlab.com",
+        "lb-teleport.gstg.gitlab.com",
+        "4456656-review-main-patch-t0zk8u.design-staging.gitlab.com",
+        "4456656-review-main-patch-5uc0jr.design-staging.gitlab.com",
+        "about.staging.gitlab.com",
+        "4456656-review-v-mishra-m-1iu2rs.design-staging.gitlab.com",
+        "4456656-review-sselhorn-m-cp6hbg.design-staging.gitlab.com",
+        "4456656-review-theoretick-nolo1m.design-staging.gitlab.com",
+        "page.gitlab.com",
+        "4456656-review-aregnery-a-q3q5lo.design-staging.gitlab.com",
+        "www.contributors.gitlab.com",
+        "4456656-review-main-patch-hw74zf.design-staging.gitlab.com",
+        "deps.staging.sec.gitlab.com",
+        "prometheus-db.db-integration.gitlab.com",
+        "4456656-review-1578-updat-j6nklw.design-staging.gitlab.com",
+        "4456656-review-1699-acces-nqqei4.design-staging.gitlab.com",
+        "www.license.gitlab.com",
+        "registry.staging.gitlab.com",
+        "4456656-review-main-patch-p5v4z5.design-staging.gitlab.com",
+        "4456656-review-1688-add-g-4yxtb0.design-staging.gitlab.com",
+        "4456656-review-main-patch-9ymnv2.design-staging.gitlab.com",
+        "slippers.gitlab.com",
+        "4456656-review-monica-gal-pz78s2.design-staging.gitlab.com",
+        "4456656-review-leipert-fi-b4f198.design-staging.gitlab.com",
+        "www.hub.gitlab.com",
+        "kas.pre.gitlab.com",
+        "registry.pre.gitlab.com",
+        "4456656-review-mle-guidan-6dcfz1.design-staging.gitlab.com",
+        "4456656-review-gl-global-ehsdxl.design-staging.gitlab.com",
+        "www.registry.gitlab.com",
+        "4456656-review-main-patch-xs3wgn.design-staging.gitlab.com",
+        "4456656-review-danmh-main-8m9u8a.design-staging.gitlab.com",
+        "4456656-review-15-11-fig-lodxco.design-staging.gitlab.com",
+        "www.sync.geo.gitlab.com",
+        "4456656-review-katiemacoy-28xw6w.design-staging.gitlab.com",
+        "4456656-review-nickleonar-3ymc9c.design-staging.gitlab.com",
+        "www.aptly.gitlab.com",
+        "content.gitlab.com",
+        "go.gitlab.com",
+        "gitlab-org-gitlab-services-design-gitlab-com.design.gitlab.com",
+        "4456656-review-better-err-r52kcp.design-staging.gitlab.com",
+        "runners-cache-3.gitlab.com",
+        "4456656-review-1179-toggl-8ctzom.design-staging.gitlab.com",
+        "4456656-review-main-patch-ukqrqf.design-staging.gitlab.com",
+        "4456656-review-leipert-de-ukc4pq.design-staging.gitlab.com",
+        "www.docs.gitlab.com",
+        "static-objects.staging.gitlab.com",
+        "4456656-review-jeldergl-m-94oflr.design-staging.gitlab.com",
+        "4456656-review-nadia-sotn-dfivs2.design-staging.gitlab.com",
+        "4456656-review-fix-broken-484psj.design-staging.gitlab.com",
+        "cloud.gitlab.com",
+        "dashboards.gitlab.com",
+        "www.chef.gitlab.com",
+        "search.advisories.gitlab.com",
+        "runway-ci-test-4jpyc3.staging.runway.gitlab.com",
+        "4456656-review-popover-gu-1s8esd.design-staging.gitlab.com",
+        "www.dashboards.gitlab.com",
+        "codesuggestions.gitlab.com",
+        "prod.geo.gitlab.com",
+        "4456656-review-beckalippe-yi346l.design-staging.gitlab.com",
+        "4456656-review-switchover-i4ueoq.design-staging.gitlab.com",
+        "4456656-review-init-ui-ki-9s5r7x.design-staging.gitlab.com",
+        "glcodesuggestion.prototype.gitlab.com",
+        "4456656-review-mvanremmer-mxih49.design-staging.gitlab.com",
+        "kas.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "redash.gitlab.com",
+        "4456656-review-ui-kit-rel-zkqdli.design-staging.gitlab.com",
+        "4456656-review-1517-dropd-biebor.design-staging.gitlab.com",
+        "campaign-manager.gitlab.com",
+        "4456656-review-1504-figma-ccev9n.design-staging.gitlab.com",
+        "4456656-review-1702-creat-qe3vkr.design-staging.gitlab.com",
+        "4456656-review-372-button-cu19b4.design-staging.gitlab.com",
+        "4456656-review-1292-rende-mv55i4.design-staging.gitlab.com",
+        "4456656-review-eread-add-z47gmh.design-staging.gitlab.com",
+        "app.community.gitlab.com",
+        "geo.staging-ref.gitlab.com",
+        "customers.staging-ref.gitlab.com",
+        "4456656-review-annabeldun-yva22z.design-staging.gitlab.com",
+        "plantuml.pre.gitlab.com",
+        "rocketchat.gitlab.com",
+        "kas1.pre.gitlab.com",
+        "www.jobs.gitlab.com",
+        "www.swedish.chef.gitlab.com",
+        "4456656-review-sselhorn-m-ygc05a.design-staging.gitlab.com",
+        "handbook.gitlab.com",
+        "4456656-review-leipert-te-1f4hg0.design-staging.gitlab.com",
+        "4456656-review-leipert-sv-zlo2if.design-staging.gitlab.com",
+        "4456656-review-update-con-flbvjr.design-staging.gitlab.com",
+        "cdn.registry.pre.gitlab.com",
+        "private-runners-manager-3.gitlab.com",
+        "4456656-review-main-patch-dtq903.design-staging.gitlab.com",
+        "bogus.staging.gitlab.com",
+        "sync.geo.gitlab.com",
+        "4456656-review-1204-add-c-a529gy.design-staging.gitlab.com",
+        "4456656-review-mle-settin-mgne7n.design-staging.gitlab.com",
+        "4456656-review-update-str-dw8cuz.design-staging.gitlab.com",
+        "4456656-review-1369-color-ccob8j.design-staging.gitlab.com",
+        "www.plantuml.pre.gitlab.com",
+        "www.page.gitlab.com",
+        "www.university.gitlab.com",
+        "mr-sidebar.prototype.gitlab.com",
+        "4456656-review-remove-res-130xbp.design-staging.gitlab.com",
+        "4456656-review-nadia-sotn-a2gju7.design-staging.gitlab.com",
+        "4456656-review-v-mishra-m-4agh3r.design-staging.gitlab.com",
+        "4456656-review-yarn-tool-9v2qz8.design-staging.gitlab.com",
+        "gateway.gcp.gitlab.com",
+        "blog.gitlab.com",
+        "ci.gitlab.com",
+        "4456656-review-katiemacoy-6mkyxy.design-staging.gitlab.com",
+        "4456656-review-vs-update-l692gb.design-staging.gitlab.com",
+        "www.runners-cache-4.gitlab.com",
+        "swedish.chef.gitlab.com",
+        "4456656-review-fix-socks-qqsw5a.design-staging.gitlab.com",
+        "4456656-review-danmh-main-7byn0x.design-staging.gitlab.com",
+        "www.triage-serverless.gitlab.com",
+        "4456656-review-email-obfu-vz3rnd.design-staging.gitlab.com",
+        "4456656-review-msj-extern-e112lv.design-staging.gitlab.com",
+        "4456656-review-1445-merma-izi4nv.design-staging.gitlab.com",
+        "4456656-review-1686-follo-54znci.design-staging.gitlab.com",
+        "4456656-review-leipert-me-2kf6ib.design-staging.gitlab.com",
+        "www.canary.staging.gitlab.com",
+        "4456656-review-1442-dropd-pel4gp.design-staging.gitlab.com",
+        "www.dr.gitlab.com",
+        "www.redash.gitlab.com",
+        "www.runners-cache-1.gitlab.com",
+        "grafana.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+        "4456656-review-main-patch-5jw3b1.design-staging.gitlab.com",
+        "4456656-review-sselhorn-m-ulzly1.design-staging.gitlab.com",
+        "4456656-review-1468-pajam-z15l6c.design-staging.gitlab.com",
+        "4456656-review-figma-chan-m8wo3e.design-staging.gitlab.com",
+        "www.ee.gitlab.com",
+        "triage-ops.gitlab.com",
+        "4456656-review-gitlab-ui-l35n7g.design-staging.gitlab.com",
+        "4456656-review-update-dat-0ptsk3.design-staging.gitlab.com",
+        "4456656-review-main-patch-h5jvmx.design-staging.gitlab.com",
+        "4456656-review-monica-gal-3qi8ge.design-staging.gitlab.com",
+        "www.federal-support.gitlab.com",
+        "4456656-review-1656-creat-1s3oj9.design-staging.gitlab.com",
+        "4456656-review-loadmore-53edp1.design-staging.gitlab.com",
+        "4456656-review-1325-vpat-wdbu9w.design-staging.gitlab.com",
+        "4456656-review-1524-docs-riq0la.design-staging.gitlab.com",
+        "www.blog.gitlab.com",
+        "chef.gitlab.com",
+        "runners-cache-4.gitlab.com",
+        "shop.gitlab.com",
+        "4456656-review-matejlatin-myrk4n.design-staging.gitlab.com",
+        "4456656-review-1526-updat-cnlkd8.design-staging.gitlab.com",
+        "staging.observe.gitlab.com",
+        "cert-test.staging.gitlab.com",
+        "4456656-review-468-dropdo-tuaw1h.design-staging.gitlab.com",
+        "4456656-review-1529-vpat-t9lc7u.design-staging.gitlab.com",
+        "canary.gitlab.com",
+        "deps-review.sec.gitlab.com",
+        "4456656-review-1462-updat-gnllst.design-staging.gitlab.com",
+        "4456656-review-1567-add-n-goo7zb.design-staging.gitlab.com",
+        "auth.gcp.gitlab.com",
+        "private-runners-manager-4.gitlab.com",
+        "4456656-review-matejlatin-c5v5u3.design-staging.gitlab.com",
+        "4456656-review-sselhorn-m-fv9x5d.design-staging.gitlab.com",
+        "4456656-review-navigation-qlpoi0.design-staging.gitlab.com",
+        "4456656-review-katiemacoy-9w1w8o.design-staging.gitlab.com",
+        "4456656-review-1466-homep-if4gda.design-staging.gitlab.com",
+        "4456656-review-main-patch-1axc6b.design-staging.gitlab.com",
+        "app-staging.community.gitlab.com",
+        "auth.gitlab.com",
+        "registry.gke.gstg.gitlab.com",
+        "translate.gitlab.com",
+        "www.geo2.gitlab.com",
+        "www.about.gitlab.com",
+        "cxr.gitlab.com",
+        "4456656-review-jeldergl-m-i8pqtg.design-staging.gitlab.com",
+        "4456656-review-dropdown-u-xey22m.design-staging.gitlab.com",
+        "4456656-review-main-patch-jyt49u.design-staging.gitlab.com",
+        "www.customers.gitlab.com",
+        "www.next.staging.gitlab.com",
+        "partnerflash.gitlab.com",
+        "jitsu-configurator.product-analytics.prototype.gitlab.com",
+        "4456656-review-feat-add-i-jfatva.design-staging.gitlab.com",
+        "4456656-review-main-patch-mj74wu.design-staging.gitlab.com",
+        "4456656-review-remove-lin-8gm7r0.design-staging.gitlab.com",
+        "www.about-src.gitlab.com",
+        "jobs.gitlab.com",
+        "about-src.gitlab.com",
+        "4456656-review-1534-dropd-ybke0g.design-staging.gitlab.com",
+        "4456656-review-1474-butto-9dliu5.design-staging.gitlab.com",
+        "go-staging.community.gitlab.com",
+        "observe.staging.gitlab.com",
+        "4456656-review-main-patch-ibw59q.design-staging.gitlab.com",
+        "4456656-review-16-3-figma-9mwtgl.design-staging.gitlab.com",
+        "lb-teleport.gprd.gitlab.com",
+        "4456656-review-main-patch-7zq31d.design-staging.gitlab.com",
+        "4456656-review-1249-evalu-o3ym8w.design-staging.gitlab.com",
+        "www.feedback.gitlab.com",
+        "www.forum.gitlab.com",
+        "manager-staging.community.gitlab.com",
+        "4456656-review-jlouw-fix-3hbdqy.design-staging.gitlab.com",
+        "4456656-review-1527-type-0ahnvf.design-staging.gitlab.com",
+        "4456656-review-nadia-sotn-n2exgz.design-staging.gitlab.com",
+        "4456656-review-main-patch-17vfv3.design-staging.gitlab.com",
+        "www.next.gitlab.com",
+        "auth.aws.gitlab.com",
+        "events.gitlab.com",
+        "gstg.gitlab.com",
+        "4456656-review-main-patch-43rhv4.design-staging.gitlab.com",
+        "packages.gitlab.com",
+        "4456656-review-aregnery-s-qu3sap.design-staging.gitlab.com",
+        "4456656-review-lvanc-main-vhyovi.design-staging.gitlab.com",
+        "4456656-review-danmh-base-jxzqod.design-staging.gitlab.com",
+        "4456656-review-main-patch-la5jps.design-staging.gitlab.com",
+        "www.piwik.gitlab.com",
+        "4456656-review-codeowners-98nl8j.design-staging.gitlab.com",
+        "www.gitlab.com",
+        "feedback.gitlab.com",
+        "registry.gke.pre.gitlab.com",
+        "chef12.gitlab.com",
+        "4456656-review-tauriedavi-ngijlf.design-staging.gitlab.com",
+        "4456656-review-replace-re-ozvga7.design-staging.gitlab.com",
+        "geo1.gitlab.com",
+        "learn.gitlab.com",
+        "4456656-review-matejlatin-ht343x.design-staging.gitlab.com",
+        "4456656-review-editaction-iyfa0g.design-staging.gitlab.com",
+        "cell-c01j2gdw0zfdafxr6.cells.gitlab.com",
+        "chat.gitlab.com",
+        "cdn.registry.staging.gitlab.com",
+        "4456656-review-ai-guidanc-9p86nm.design-staging.gitlab.com",
+        "4456656-review-1470-pajam-1i3s9p.design-staging.gitlab.com",
+        "customers.stg.gitlab.com",
+        "aptly.gitlab.com",
+        "4456656-review-spacing-ex-nrw7ke.design-staging.gitlab.com",
+        "www.ce.gitlab.com",
+        "4456656-review-1466-homep-b9nz0w.design-staging.gitlab.com",
+        "errortracking.observe.gitlab.com",
+        "4456656-review-msj-gitlab-51lnju.design-staging.gitlab.com",
+        "4456656-review-aregnery-b-jm67v7.design-staging.gitlab.com",
+        "4456656-review-main-patch-uhk064.design-staging.gitlab.com",
+        "www.registry.staging.gitlab.com",
+        "2670515-review-enable-aut-a96d5t.cust-staging.gitlab.com",
+        "4456656-review-1682-creat-k9e7cn.design-staging.gitlab.com",
+        "4456656-review-1457-resol-ux5ml2.design-staging.gitlab.com",
+        "4456656-review-1384-color-9936bf.design-staging.gitlab.com",
+        "hub.gitlab.com",
+        "4456656-review-beckalippe-9ayot8.design-staging.gitlab.com",
+        "4456656-review-gdoyle-mai-ydq5be.design-staging.gitlab.com",
+        "4456656-review-main-patch-tge44a.design-staging.gitlab.com",
+        "registry.gitlab.com",
+        "4456656-review-decrease-f-yjhr8g.design-staging.gitlab.com",
+        "le-4456656.design.gitlab.com",
+        "4456656-review-1365-dropd-gp25pd.design-staging.gitlab.com",
+        "4456656-review-main-patch-7vaf0e.design-staging.gitlab.com",
+        "4456656-review-color-pale-e7ltzf.design-staging.gitlab.com",
+        "www.prometheus-2.gitlab.com",
+        "developer.gitlab.com",
+        "host.gitlab.com",
+        "4456656-review-main-patch-pdbsbv.design-staging.gitlab.com",
+        "4456656-review-main-patch-fh2a11.design-staging.gitlab.com",
+        "www.registry.pre.gitlab.com",
+        "about.gitlab.com",
+        "piwik.gitlab.com",
+        "4456656-review-pedroms-ma-qh0b5c.design-staging.gitlab.com",
+        "4456656-review-add-variou-c2yklh.design-staging.gitlab.com",
+        "federal-support.gitlab.com",
+        "4456656-review-fix-templa-rmaij2.design-staging.gitlab.com",
+        "4456656-review-main-patch-wl4twp.design-staging.gitlab.com",
+        "4456656-review-1601-creat-6facx9.design-staging.gitlab.com",
+        "4456656-review-1389-skele-4wl4g6.design-staging.gitlab.com",
+        "4456656-review-1568-creat-9zjn0e.design-staging.gitlab.com",
+        "4456656-review-danmh-ui-k-1zf7up.design-staging.gitlab.com",
+        "4456656-review-sticky-hea-muxkb0.design-staging.gitlab.com",
+        "4456656-review-main-patch-akmp1u.design-staging.gitlab.com",
+        "4456656-review-leipert-re-odlobn.design-staging.gitlab.com",
+        "www.shop.gitlab.com",
+        "www.get.gitlab.com",
+        "www.support.gitlab.com",
+        "4456656-review-update-ui-qkugqu.design-staging.gitlab.com",
+        "4456656-review-167-fix-br-ka1mjc.design-staging.gitlab.com",
+        "4456656-review-settings-d-76bn45.design-staging.gitlab.com",
+        "glchat.prototype.gitlab.com",
+        "design.gitlab.com",
+        "4456656-review-1371-illus-zin06c.design-staging.gitlab.com",
+        "4456656-review-1455-clean-4futx0.design-staging.gitlab.com",
+        "www.learn.gitlab.com",
+        "altssh.gitlab.com",
+        "le-4456656.design-staging.gitlab.com",
+        "4456656-review-matejlatin-0424qa.design-staging.gitlab.com",
+        "4456656-review-sselhorn-m-ujr9vh.design-staging.gitlab.com",
+        "4456656-review-1471-updat-bl7fl4.design-staging.gitlab.com",
+        "4456656-review-1443-updat-pod18c.design-staging.gitlab.com",
+        "4456656-review-fix-lockfi-xfj7fu.design-staging.gitlab.com",
+        "le-2670515.cust-staging.gitlab.com",
+        "4456656-review-russell-im-mr165k.design-staging.gitlab.com",
+        "4456656-review-nadia-sotn-344w7f.design-staging.gitlab.com",
+        "4456656-review-ui-kit-dep-cjugbw.design-staging.gitlab.com",
+        "4456656-review-refactor-c-ilw0zv.design-staging.gitlab.com",
+        "4456656-review-danmh-link-zzbmci.design-staging.gitlab.com",
+        "4456656-review-main-patch-6yplki.design-staging.gitlab.com",
+        "4456656-review-pedroms-ma-b2xv0l.design-staging.gitlab.com",
+        "runway.gitlab.com",
+        "design-staging.gitlab.com",
+        "registry.geo.staging-ref.gitlab.com",
+        "4456656-review-1623-creat-6s0twl.design-staging.gitlab.com",
+        "4456656-review-1435-comma-5x5076.design-staging.gitlab.com"
+      ],
+      "details": "discovered via subfinder",
+      "count": 536,
+      "first_seen": "2026-04-16T20:40:23.704045053Z"
+    }
+  ],
+  "raw_findings": [
+    {
+      "severity": "low",
+      "kind": "cidr-discovered",
+      "target": "91.235.46.0/24",
+      "details": "CIDR block discovered via Pius (source: asn-bgp, asn: AS57787)",
+      "first_seen": "2026-04-16T20:36:49.065006046Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704045053Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704045599Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-dev-1443-u-micvmc.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704046007Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-br77mb.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704046303Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-broken-qybukn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704046960Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.customers.stg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704047271Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "forum.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704047563Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runners-cache-2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704047830Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "customers.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704048658Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-gdpmpv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704048943Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-fea-0m983a.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704049570Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "o1.ptr3386.mx.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704049863Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "geo.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704050141Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runners-cache-1.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704050394Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-vs-fix-cod-r1wbfx.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704050673Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "ee.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704051033Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "support.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704051593Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-link-mh9siw.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704052192Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-0hbs2y.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704052524Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "contributors.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704052785Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "do158-143.mg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704053049Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "alerts.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704053310Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feat-add-n-atvmbp.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704053624Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "single.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704053902Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-iu1n63.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704054183Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-zcjz2f.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704054462Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1107-add-e-53243j.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704054722Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-matejlatin-77kun7.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704054984Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.kas.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704055266Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.prometheus.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704055545Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "explore.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704055826Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.gke.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704056105Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-figm-ecofo8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704062033Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-759-standa-338g48.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704062316Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1398-typog-54o4di.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704062595Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-hwu1ap.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704062855Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "chef2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704063136Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cocreate.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704063415Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "levelup.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704063694Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-viewcompon-kkveh5.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704063975Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "grafana.amp.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704064234Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gprd.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704064580Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus-3.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704064839Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "observe.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704065109Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1454-clean-24ifbs.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704065392Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "doc.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704065699Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-jeldergl-m-wl40lx.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704065976Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "dast-4456656-dast-default.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704066304Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-ban-zn4m0o.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704066600Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "grafana.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704066912Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "status.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704067193Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "version.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704067482Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "metrics.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704067747Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-167-broken-qj1ysq.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704068025Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-dmoraberli-v9tcck.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704068330Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.canary.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704068589Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "university.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704069002Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-glpathupda-ppzo2c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704069550Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-pgascouvai-1f4bo8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704069845Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "customers.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704070113Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus.db-integration.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704070396Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-372-remove-g0vjv5.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704073441Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-add-variou-c1mz21.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704073722Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "get.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704074002Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-cam-x-main-r0jpo8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704076712Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-tool-versi-qskle9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704076996Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.rocketchat.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704077275Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "api-staging.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704077555Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-r-sii6ch.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704077816Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-katiemacoy-6kowxh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704078079Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-ld-remove-s98iax.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704078346Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.runners-cache-5.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704078629Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "dr.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704078925Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-ad-yv3s6o.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704079193Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-add-radio-thttki.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704079456Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-com-fl3uox.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704079719Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.gprd.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704080Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.prometheus-3.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704080281Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "advisories.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704080558Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "private-runners-manager-1.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704080838Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus-app.db-integration.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704081099Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-lookbook-e-vm97y9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704081364Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-v-mishra-m-674soo.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704081635Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1464-add-p-jxfmxs.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704081897Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "internal.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704082178Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "opensearch.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704082440Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704082763Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-pi-ylw4l9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704083076Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-helping-us-ab9za1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704083355Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-z106gz.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704083633Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-inf-chsgkf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704083913Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.alerts.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704084190Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704084449Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-add-refere-m150sn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704084727Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sam-figuer-w6w8ie.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704085262Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "enable.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704085697Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "ir.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704086043Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-so-fnmdgi.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704086336Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-fi-a93rup.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704086600Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus-2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704086915Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-kbd-styles-3wqnci.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704087197Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-bugfix-loc-qvog2t.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704087474Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.runners-cache-3.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704087762Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-neu-l9jugi.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704088025Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feature-ve-83unpv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704088283Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "ai-gateway-eks.cloud.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704090874Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "pre-puma.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704091154Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1515-broke-hy4xvx.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704091407Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-frontend-o-k89w9g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704091658Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "new.docs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704091931Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1532-fix-a-vslnpm.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704092190Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-16-1-ui-ki-igmj3o.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704092444Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "deps.sec.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704092733Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-t8812x.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704092986Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.runners-cache-2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704093258Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gslink.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704093531Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-e9wgrt.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704093790Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-mnichols1-tpamws.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704094050Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-09hgox.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704094309Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "auth.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704094584Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-372-migrat-fsc737.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704094849Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-add-939zv6.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704095111Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-oz459g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704095381Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "opensearch.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704095651Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus.staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704095921Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "glchatvertex.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704096174Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-alert-upda-7zeoqy.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704096434Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.prod.geo.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704096708Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "triage-serverless.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704107666Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-vs8cmm.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704107934Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-tooltip-fo-4b3dch.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704108197Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-pre-code-s-fryi17.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704108484Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704108752Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704109050Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-fi-8xvt9u.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704109313Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "geo2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704109612Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feat-typog-iods1d.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704109875Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1345-story-efzw0t.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704110144Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-rayana-mai-8n3oyd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704110404Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-tab-d7o120.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704110669Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.status.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704110965Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.gstg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704111244Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "license.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704111523Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-typo-doc-j-9vr37q.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704111804Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "next.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704112098Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-526-add-co-hhd4pd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704112363Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-docs-headi-iwghf9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704112630Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704112896Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "scim.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704113191Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cinc.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704113486Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-russell-ad-4deif2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704113746Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-loadmoregu-u81fud.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704114012Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-f6fk1y.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704114278Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704114549Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-main-a8e81c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704117048Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.packages.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704117330Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-sw-gx6s02.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704117592Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-storybook-hverfl.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704117859Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-ske-mudp9g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704118121Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "api.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704118398Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "canary.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704118677Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-punctu-7gmkwg.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704118939Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-372-founda-5ok9gh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704119205Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704119493Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "partners.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704119783Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-ahykfo.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704120045Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-6j8uwc.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704120311Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1384-migra-hi3gz1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704120574Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-620-preven-sgkdey.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704120835Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1384-migra-vzug97.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704121097Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-main-l30vd9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704121364Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-line-602hhc.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704121628Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-main-c1cmm0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704121891Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-372-cleanu-gim0da.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704122154Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1581-pajam-ux0aky.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704122422Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1569-desig-pt069r.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704122683Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-key-t4ghhd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704122944Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "analytics.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704123222Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-cluster-te-ahlmff.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704123484Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-figure-img-csecdr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704123750Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feat-add-d-6hvldh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704124011Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "email.customers.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704124320Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-do-not-for-pzqdfc.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704124604Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.geo1.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704124885Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-russell-do-9o5hdr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704125146Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-monica-gal-s5wit4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704125412Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-in-fn9qbu.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704125679Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "errortracking.staging.observe.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704125939Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1413-typog-zh5cqo.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704126201Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-stepper-jyhpg9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704126467Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "support-mw.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704126746Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feature-ve-84glmd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704127007Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-migrate-gl-towhzq.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704127274Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-avoid-cons-9ii5vn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704127536Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "ce.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704127831Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-t-k27a4t.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704128094Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704128378Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-e4eovu.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704128640Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-uanp44.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704128904Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-gt-update-7ocwl1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704129167Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cloud.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704131675Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-16-2-fig-b-vkcmpy.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704131938Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-russell-ad-rs1ci4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704132205Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-labe-7m5eaz.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704132469Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "archives.docs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704132749Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runners-cache-5.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704133029Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-amittner-m-nerl7d.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704133287Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "docs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704133647Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1443-updat-77up3w.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704133943Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1444-link-mzm8ta.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704134222Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704134515Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-lvanc-feat-c4vnls.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704134799Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-markrian-m-2hprzi.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704135060Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.support-mw.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704135339Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.chat.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704135615Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "email.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704135981Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-u-87yayz.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704136432Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-dropdo-pxfde4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704136709Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "biz.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704137001Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cdn.registry.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704137275Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-todo-issue-mxbz2n.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704137550Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-link-updat-3hh8ij.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704137814Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-work-item-z7jn6r.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704138077Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-monica-gal-oepnqj.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704138334Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-htq0lf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704138595Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "jitsu-server.product-analytics.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704138861Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "shared-runners-manager-4.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704139116Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704139430Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-nav-ztnp39.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704139705Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.version.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704139987Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "groove.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704140274Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-424-docume-1auq3m.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704140533Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-jeldergl-m-6ft9af.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704140787Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-5og57p.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704141047Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.ci.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704141324Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "next.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704141597Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "lb-teleport.gstg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704141870Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-t0zk8u.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704142130Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-5uc0jr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704142391Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "about.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704142667Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-v-mishra-m-1iu2rs.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704142928Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-cp6hbg.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704143180Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-theoretick-nolo1m.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704145717Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "page.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704146012Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-a-q3q5lo.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704146273Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.contributors.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704146546Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-hw74zf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704146808Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "deps.staging.sec.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704147101Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prometheus-db.db-integration.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704147353Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1578-updat-j6nklw.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704147606Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1699-acces-nqqei4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704147857Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.license.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704148130Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704148412Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-p5v4z5.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704148665Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1688-add-g-4yxtb0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704148925Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-9ymnv2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704149177Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "slippers.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704170678Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-monica-gal-pz78s2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704171010Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-fi-b4f198.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704171277Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.hub.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704173675Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704173977Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704174254Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-mle-guidan-6dcfz1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704174517Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-gl-global-ehsdxl.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704174786Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.registry.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704175064Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-xs3wgn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704175326Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-main-8m9u8a.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704175594Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-15-11-fig-lodxco.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704175855Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.sync.geo.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704176136Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-katiemacoy-28xw6w.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704176399Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nickleonar-3ymc9c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704176663Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.aptly.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704176944Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "content.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704177224Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "go.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704177519Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gitlab-org-gitlab-services-design-gitlab-com.design.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704177796Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-better-err-r52kcp.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704178058Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runners-cache-3.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704178347Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1179-toggl-8ctzom.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704178611Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-ukqrqf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704178877Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-de-ukc4pq.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704179141Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.docs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704179418Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "static-objects.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704179720Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-jeldergl-m-94oflr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704179986Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-dfivs2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704180274Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-broken-484psj.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704180537Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cloud.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704180817Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "dashboards.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704181095Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.chef.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704181374Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "search.advisories.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704181651Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runway-ci-test-4jpyc3.staging.runway.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704181931Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-popover-gu-1s8esd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704182209Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.dashboards.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704182486Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "codesuggestions.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704182764Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "prod.geo.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704183026Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-beckalippe-yi346l.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704183309Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-switchover-i4ueoq.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704183586Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-init-ui-ki-9s5r7x.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704183864Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "glcodesuggestion.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704184123Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-mvanremmer-mxih49.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704184386Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704184651Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "redash.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704184931Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-ui-kit-rel-zkqdli.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704185193Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1517-dropd-biebor.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704185459Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "campaign-manager.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704185748Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1504-figma-ccev9n.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704186011Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1702-creat-qe3vkr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704188532Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-372-button-cu19b4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704188797Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1292-rende-mv55i4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704189061Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-eread-add-z47gmh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704189328Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "app.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704189611Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "geo.staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704189891Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "customers.staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704190149Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-annabeldun-yva22z.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704190415Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "plantuml.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704190696Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "rocketchat.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704190977Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "kas1.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704191255Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.jobs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704191534Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.swedish.chef.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704191798Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-ygc05a.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704192079Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "handbook.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704192339Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-te-1f4hg0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704192624Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-sv-zlo2if.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704192901Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-con-flbvjr.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704193180Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cdn.registry.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704193459Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "private-runners-manager-3.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704193717Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-dtq903.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704193982Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "bogus.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704194265Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "sync.geo.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704194543Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1204-add-c-a529gy.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704194806Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-mle-settin-mgne7n.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704195073Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-str-dw8cuz.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704195334Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1369-color-ccob8j.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704195596Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.plantuml.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704195878Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.page.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704196158Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.university.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704196438Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "mr-sidebar.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704196720Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-remove-res-130xbp.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704197016Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-a2gju7.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704197296Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-v-mishra-m-4agh3r.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704197557Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-yarn-tool-9v2qz8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704197816Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gateway.gcp.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704198102Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "blog.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704198396Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "ci.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704198693Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-katiemacoy-6mkyxy.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704198956Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-vs-update-l692gb.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704199224Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.runners-cache-4.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704199507Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "swedish.chef.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704199787Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-socks-qqsw5a.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704200050Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-main-7byn0x.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704200319Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.triage-serverless.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704200585Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-email-obfu-vz3rnd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704200853Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-msj-extern-e112lv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704201114Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1445-merma-izi4nv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704203570Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1686-follo-54znci.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704203839Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-me-2kf6ib.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704204103Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.canary.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704204387Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1442-dropd-pel4gp.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704204650Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.dr.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704204933Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.redash.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704205212Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.runners-cache-1.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704205491Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "grafana.us-east-1.cell-c01k35wpsh58x0j74g.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704205753Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-5jw3b1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704206020Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-ulzly1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704206283Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1468-pajam-z15l6c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704206546Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-figma-chan-m8wo3e.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704206808Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.ee.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704207089Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "triage-ops.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704207366Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-gitlab-ui-l35n7g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704207631Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-dat-0ptsk3.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704207896Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-h5jvmx.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704208158Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-monica-gal-3qi8ge.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704208419Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.federal-support.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704208699Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1656-creat-1s3oj9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704208960Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-loadmore-53edp1.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704209227Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1325-vpat-wdbu9w.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704209490Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1524-docs-riq0la.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704209750Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.blog.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704210031Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "chef.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704210327Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runners-cache-4.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704210607Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "shop.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704210903Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-matejlatin-myrk4n.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704211180Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1526-updat-cnlkd8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704211458Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "staging.observe.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704211736Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cert-test.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704212014Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-468-dropdo-tuaw1h.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704212293Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1529-vpat-t9lc7u.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704212571Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "canary.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704212848Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "deps-review.sec.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704213126Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1462-updat-gnllst.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704213405Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1567-add-n-goo7zb.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704213681Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "auth.gcp.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704213968Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "private-runners-manager-4.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704214232Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-matejlatin-c5v5u3.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704214516Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-fv9x5d.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704214810Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-navigation-qlpoi0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704215081Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-katiemacoy-9w1w8o.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704215346Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1466-homep-if4gda.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704215611Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-1axc6b.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704215873Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "app-staging.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704218349Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "auth.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704218650Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.gke.gstg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704218929Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "translate.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704219209Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.geo2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704219488Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.about.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704219744Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cxr.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704220029Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-jeldergl-m-i8pqtg.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704220308Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-dropdown-u-xey22m.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704220585Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-jyt49u.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704220863Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.customers.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704221129Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.next.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704221396Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "partnerflash.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704221657Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "jitsu-configurator.product-analytics.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704221942Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-feat-add-i-jfatva.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704222220Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-mj74wu.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704222497Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-remove-lin-8gm7r0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704222775Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.about-src.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704223055Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "jobs.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704223348Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "about-src.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704223604Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1534-dropd-ybke0g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704223888Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1474-butto-9dliu5.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704224168Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "go-staging.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704224430Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "observe.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704224698Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-ibw59q.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704224975Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-16-3-figma-9mwtgl.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704225256Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "lb-teleport.gprd.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704225517Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-7zq31d.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704225803Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1249-evalu-o3ym8w.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704226080Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.feedback.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704226357Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.forum.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704226637Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "manager-staging.community.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704226956Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-jlouw-fix-3hbdqy.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704227236Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1527-type-0ahnvf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704227499Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-n2exgz.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704227762Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-17vfv3.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704228025Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.next.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704228304Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "auth.aws.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704228581Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "events.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704228858Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "gstg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704229480Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-43rhv4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704229805Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "packages.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704237406Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-s-qu3sap.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704237665Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-lvanc-main-vhyovi.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704237922Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-base-jxzqod.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704238177Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-la5jps.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704238431Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.piwik.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704238711Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-codeowners-98nl8j.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704241610Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704241906Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "feedback.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704242181Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.gke.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704242454Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "chef12.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704242704Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-tauriedavi-ngijlf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704242979Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-replace-re-ozvga7.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704243266Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "geo1.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704243566Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "learn.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704243855Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-matejlatin-ht343x.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704244129Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-editaction-iyfa0g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704244406Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cell-c01j2gdw0zfdafxr6.cells.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704260474Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "chat.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704260784Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "cdn.registry.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704261057Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-ai-guidanc-9p86nm.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704261333Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1470-pajam-1i3s9p.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704261588Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "customers.stg.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704261863Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "aptly.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704262138Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-spacing-ex-nrw7ke.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704262405Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.ce.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704262679Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1466-homep-b9nz0w.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704262938Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "errortracking.observe.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704263198Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-msj-gitlab-51lnju.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704263453Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-aregnery-b-jm67v7.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704263714Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-uhk064.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704263969Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.registry.staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704264241Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "2670515-review-enable-aut-a96d5t.cust-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704264510Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1682-creat-k9e7cn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704264772Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1457-resol-ux5ml2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704265032Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1384-color-9936bf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704265294Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "hub.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704265582Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-beckalippe-9ayot8.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704265844Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-gdoyle-mai-ydq5be.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704266099Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-tge44a.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704266359Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704266636Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-decrease-f-yjhr8g.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704266897Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "le-4456656.design.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704267197Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1365-dropd-gp25pd.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704267458Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-7vaf0e.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704267712Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-color-pale-e7ltzf.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704267973Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.prometheus-2.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704268248Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "developer.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704268537Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "host.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704268825Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-pdbsbv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704271732Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-fh2a11.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704271990Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.registry.pre.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704272261Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "about.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704272536Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "piwik.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704272808Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-pedroms-ma-qh0b5c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704273083Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-add-variou-c2yklh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704273360Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "federal-support.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704273638Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-templa-rmaij2.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704273899Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-wl4twp.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704274151Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1601-creat-6facx9.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704274402Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1389-skele-4wl4g6.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704274663Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1568-creat-9zjn0e.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704274917Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-ui-k-1zf7up.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704275177Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sticky-hea-muxkb0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704275430Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-akmp1u.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704275689Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-leipert-re-odlobn.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704275943Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.shop.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704276216Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.get.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704276489Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.support.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704276762Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-update-ui-qkugqu.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704277016Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-167-fix-br-ka1mjc.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704277275Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-settings-d-76bn45.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704277527Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "glchat.prototype.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704277801Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "design.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704311941Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1371-illus-zin06c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704312285Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1455-clean-4futx0.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704312565Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "www.learn.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704312842Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "altssh.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704313099Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "le-4456656.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704313380Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-matejlatin-0424qa.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704313656Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-sselhorn-m-ujr9vh.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704313914Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1471-updat-bl7fl4.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704314176Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1443-updat-pod18c.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704314441Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-fix-lockfi-xfj7fu.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704314703Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "le-2670515.cust-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704314966Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-russell-im-mr165k.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704317482Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-nadia-sotn-344w7f.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704317754Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-ui-kit-dep-cjugbw.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704318016Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-refactor-c-ilw0zv.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704318276Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-danmh-link-zzbmci.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704318539Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-main-patch-6yplki.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704318806Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-pedroms-ma-b2xv0l.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704319067Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "runway.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704319345Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704319625Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "registry.geo.staging-ref.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704319887Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1623-creat-6s0twl.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704320151Z"
+    },
+    {
+      "severity": "info",
+      "kind": "subdomain",
+      "target": "4456656-review-1435-comma-5x5076.design-staging.gitlab.com",
+      "details": "discovered via subfinder",
+      "first_seen": "2026-04-16T20:40:23.704320414Z"
+    }
+  ],
+  "dedup_enabled": true,
+  "final_summary": "Subfinder found 536 subdomains, but httpx failed due to invalid arguments. Assessment chain terminated. Verify httpx usage: https://github.com/projectdiscovery/httpx",
+  "next_steps": [
+    "Validate httpx command syntax",
+    "Manually check live subdomains",
+    "Reattempt with corrected parameters"
+  ],
+  "preflight": {
+    "org": "GitLab",
+    "asn": "AS57787",
+    "mode": "passive",
+    "runtime_secs": 121.611533066,
+    "total_raw": 16,
+    "filtered_out": 8,
+    "plugins_fired": [
+      "asn-bgp",
+      "github-org",
+      "gleif",
+      "urlscan",
+      "wayback"
+    ],
+    "domains": [
+      {
+        "host": "about.gitlab.com",
+        "sources": [
+          "urlscan"
+        ],
+        "confidence": null
+      },
+      {
+        "host": "advisories.gitlab.com",
+        "sources": [
+          "urlscan"
+        ],
+        "confidence": null
+      },
+      {
+        "host": "docs.gitlab.com",
+        "sources": [
+          "urlscan"
+        ],
+        "confidence": null
+      },
+      {
+        "host": "enable.gitlab.com",
+        "sources": [
+          "urlscan"
+        ],
+        "confidence": null
+      },
+      {
+        "host": "gitlab.com",
+        "sources": [
+          "urlscan",
+          "wayback"
+        ],
+        "confidence": null
+      },
+      {
+        "host": "www.gitlab.com",
+        "sources": [
+          "wayback"
+        ],
+        "confidence": null
+      }
+    ],
+    "cidrs": [
+      {
+        "cidr": "91.235.46.0/24",
+        "source": "asn-bgp",
+        "asn": "AS57787"
+      }
+    ],
+    "github_orgs": [
+      {
+        "login": "gitlabhq",
+        "name": "GitLab",
+        "confidence": 1.0
+      },
+      {
+        "login": "runcitadel",
+        "name": "Citadel [MOVED TO GITLAB]",
+        "confidence": 0.9
+      }
+    ]
+  }
+}

@@ -16,8 +16,8 @@ use crate::report::render_report;
 use super::state::PreflightReport;
 use crate::scope::host_in_scope;
 use crate::tools::{
-    exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
-    select_interesting_urls, ToolExecution, ToolKind,
+    exec_dnsx, exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
+    parse_dnsx_output, select_interesting_urls, ToolExecution, ToolKind,
 };
 
 use super::state::{preview, RunRecord, StepRecord};
@@ -341,14 +341,56 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         };
                         // Apply scope guard.
                         let before = raw_hosts.len();
-                        let hosts: Vec<String> = raw_hosts
+                        let scoped: Vec<String> = raw_hosts
                             .into_iter()
                             .filter(|h| host_in_scope(h, &cfg.scope_patterns))
                             .collect();
-                        let dropped = before - hosts.len();
+                        let dropped = before - scoped.len();
                         if dropped > 0 {
                             println!("[!] scope guard: dropped {dropped} out-of-scope hosts before httpx");
                         }
+                        // dnsx filter: drop NXDOMAIN/SERVFAIL before httpx
+                        // probes them. Preserves CNAME-only hosts via `-cname`.
+                        // Fall back to the raw scoped list when dnsx errors, is
+                        // missing, or returns suspiciously few hits (likely a
+                        // local DNS-resolver hiccup rather than a real filter).
+                        let hosts: Vec<String> = if scoped.is_empty() {
+                            scoped
+                        } else {
+                            match exec_dnsx(&scoped).await {
+                                Ok((so, _se)) => {
+                                    let mut resolved = parse_dnsx_output(&so);
+                                    resolved.sort();
+                                    resolved.dedup();
+                                    let kept = resolved.len();
+                                    let dropped_dns = scoped.len().saturating_sub(kept);
+                                    // Suspicious-low threshold: if scoped had >50
+                                    // hosts and dnsx resolved <2%, treat as DNS
+                                    // failure rather than a valid filter.
+                                    let suspicious_low = scoped.len() > 50
+                                        && kept * 50 < scoped.len();
+                                    if kept == 0 || suspicious_low {
+                                        println!(
+                                            "[!] dnsx resolved {}/{} — suspiciously low, falling back to unfiltered list",
+                                            kept, scoped.len()
+                                        );
+                                        scoped
+                                    } else {
+                                        println!(
+                                            "[*] dnsx: {}/{} hosts resolved ({} dead-DNS dropped)",
+                                            kept,
+                                            scoped.len(),
+                                            dropped_dns
+                                        );
+                                        resolved
+                                    }
+                                }
+                                Err(e) => {
+                                    println!("[!] dnsx error ({e:#}); passing raw list to httpx");
+                                    scoped
+                                }
+                            }
+                        };
                         match exec_httpx(&hosts, cfg.httpx_cap).await {
                             Ok((so, se)) => ToolExecution {
                                 tool: kind,
