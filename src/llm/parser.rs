@@ -130,3 +130,111 @@ pub fn parse_action(raw: &str) -> Option<AgentAction> {
 
     None
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn strip_think_removes_balanced_blocks() {
+        let s = "before<think>reasoning here</think>after";
+        assert_eq!(strip_think(s), "beforeafter");
+    }
+
+    #[test]
+    fn strip_think_handles_multiple_blocks() {
+        let s = "<think>a</think>keep1<think>b</think>keep2";
+        assert_eq!(strip_think(s), "keep1keep2");
+    }
+
+    #[test]
+    fn strip_think_truncates_unclosed_block() {
+        let s = "keep<think>never closed";
+        assert_eq!(strip_think(s), "keep");
+    }
+
+    #[test]
+    fn parse_tool_call_simple_schema() {
+        let raw = r#"{"tool":"subfinder","arguments":{"domain":"example.com"}}"#;
+        match parse_action(raw) {
+            Some(AgentAction::Tool { name, args }) => {
+                assert_eq!(name, "subfinder");
+                assert_eq!(args["domain"], "example.com");
+            }
+            other => panic!("expected Tool, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_tool_call_accepts_args_alias() {
+        let raw = r#"{"tool":"httpx","args":{"cap":10}}"#;
+        match parse_action(raw) {
+            Some(AgentAction::Tool { name, args }) => {
+                assert_eq!(name, "httpx");
+                assert_eq!(args["cap"], 10);
+            }
+            other => panic!("expected Tool, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_tool_call_strips_think_and_code_fence() {
+        let raw = "<think>I should run subfinder first.</think>\nHere is my action:\n```json\n{\"tool\":\"subfinder\",\"arguments\":{\"domain\":\"example.com\"}}\n```\n";
+        match parse_action(raw) {
+            Some(AgentAction::Tool { name, .. }) => assert_eq!(name, "subfinder"),
+            other => panic!("expected Tool, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_openai_tool_calls_with_stringified_args() {
+        let raw = r#"{"tool_calls":[{"function":{"name":"nuclei","arguments":"{\"urls\":[\"https://example.com\"]}"}}]}"#;
+        match parse_action(raw) {
+            Some(AgentAction::Tool { name, args }) => {
+                assert_eq!(name, "nuclei");
+                assert_eq!(args["urls"][0], "https://example.com");
+            }
+            other => panic!("expected Tool, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_done_action_with_next_steps() {
+        let raw = r#"{"action":"done","summary":"All done.","next_steps":["rescan","report"]}"#;
+        match parse_action(raw) {
+            Some(AgentAction::Done {
+                summary,
+                next_steps,
+            }) => {
+                assert_eq!(summary, "All done.");
+                assert_eq!(next_steps, vec!["rescan", "report"]);
+            }
+            other => panic!("expected Done, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn parse_done_accepts_stop_and_finish_aliases() {
+        for action in ["stop", "finish"] {
+            let raw = format!(r#"{{"action":"{action}","summary":"x"}}"#);
+            assert!(matches!(parse_action(&raw), Some(AgentAction::Done { .. })));
+        }
+    }
+
+    #[test]
+    fn parse_returns_none_for_unparseable() {
+        assert!(parse_action("no json here at all").is_none());
+        assert!(parse_action("").is_none());
+        // valid JSON but no recognized schema
+        assert!(parse_action(r#"{"foo":"bar"}"#).is_none());
+    }
+
+    #[test]
+    fn extract_json_picks_first_balanced_object_amid_prose() {
+        let raw = "Sure! {\"tool\":\"subfinder\",\"arguments\":{}} -- let me know.";
+        match parse_action(raw) {
+            Some(AgentAction::Tool { name, .. }) => assert_eq!(name, "subfinder"),
+            other => panic!("expected Tool, got {other:?}"),
+        }
+    }
+}

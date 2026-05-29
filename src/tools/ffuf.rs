@@ -43,7 +43,8 @@ pub fn resolve_wordlist(user_path: Option<&str>) -> Result<(PathBuf, bool)> {
         }
         return Ok((path, false));
     }
-    let tmp = std::env::temp_dir().join(format!("agentspyboo-ffuf-mini-{}.txt", std::process::id()));
+    let tmp =
+        std::env::temp_dir().join(format!("agentspyboo-ffuf-mini-{}.txt", std::process::id()));
     std::fs::write(&tmp, BUNDLED_WORDLIST)
         .with_context(|| format!("write bundled wordlist to {}", tmp.display()))?;
     Ok((tmp, true))
@@ -172,12 +173,27 @@ pub fn parse_ffuf_output(stdout: &str, target_host: &str) -> Vec<crate::findings
             .to_string();
 
         let path_l = path.to_lowercase();
-        let sensitive = [".env", ".git", ".htpasswd", ".ssh", "id_rsa", "private", "secret"]
-            .iter()
-            .any(|k| path_l.contains(k));
-        let admin = ["admin", "login", "dashboard", "phpmyadmin", "console", "panel"]
-            .iter()
-            .any(|k| path_l.contains(k));
+        let sensitive = [
+            ".env",
+            ".git",
+            ".htpasswd",
+            ".ssh",
+            "id_rsa",
+            "private",
+            "secret",
+        ]
+        .iter()
+        .any(|k| path_l.contains(k));
+        let admin = [
+            "admin",
+            "login",
+            "dashboard",
+            "phpmyadmin",
+            "console",
+            "panel",
+        ]
+        .iter()
+        .any(|k| path_l.contains(k));
 
         let sev = match (status, sensitive, admin) {
             (200, true, _) => Severity::High,
@@ -221,6 +237,9 @@ mod parse_tests {
     fn parse_ffuf_handles_empty_or_malformed() {
         assert_eq!(parse_ffuf_output("", "x.com").len(), 0);
         assert_eq!(parse_ffuf_output("not json", "x.com").len(), 0);
-        assert_eq!(parse_ffuf_output(r#"{"unrelated":"shape"}"#, "x.com").len(), 0);
+        assert_eq!(
+            parse_ffuf_output(r#"{"unrelated":"shape"}"#, "x.com").len(),
+            0
+        );
     }
 }

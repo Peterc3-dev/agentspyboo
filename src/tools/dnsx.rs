@@ -55,3 +55,33 @@ pub fn parse_dnsx_output(stdout: &str) -> Vec<String> {
         .filter(|s| !s.is_empty())
         .collect()
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parses_bare_hostnames() {
+        let out = "api.example.com\nwww.example.com\n";
+        assert_eq!(
+            parse_dnsx_output(out),
+            vec!["api.example.com".to_string(), "www.example.com".to_string()]
+        );
+    }
+
+    #[test]
+    fn takes_first_token_of_host_record_pairs() {
+        // dnsx may emit "host [A 1.2.3.4]" style lines; we keep just the host.
+        let out = "api.example.com [A] [1.2.3.4]\nwww.example.com [CNAME] [edge.example.net]\n";
+        assert_eq!(
+            parse_dnsx_output(out),
+            vec!["api.example.com".to_string(), "www.example.com".to_string()]
+        );
+    }
+
+    #[test]
+    fn strips_trailing_dot_and_drops_blanks() {
+        let out = "fqdn.example.com.\n\n   \n";
+        assert_eq!(parse_dnsx_output(out), vec!["fqdn.example.com".to_string()]);
+    }
+}
