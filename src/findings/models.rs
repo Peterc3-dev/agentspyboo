@@ -124,3 +124,67 @@ pub fn dedup_findings(raw: &[Finding]) -> Vec<DedupedFinding> {
     out.sort_by(|a, b| b.severity.cmp(&a.severity).then(b.count.cmp(&a.count)));
     out
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn severity_orders_low_to_high() {
+        assert!(Severity::Info < Severity::Low);
+        assert!(Severity::Low < Severity::Medium);
+        assert!(Severity::Medium < Severity::High);
+        assert!(Severity::High < Severity::Critical);
+    }
+
+    #[test]
+    fn from_str_loose_handles_aliases_and_unknowns() {
+        assert_eq!(Severity::from_str_loose("CRITICAL"), Severity::Critical);
+        assert_eq!(Severity::from_str_loose(" high "), Severity::High);
+        assert_eq!(Severity::from_str_loose("moderate"), Severity::Medium);
+        assert_eq!(Severity::from_str_loose("medium"), Severity::Medium);
+        assert_eq!(Severity::from_str_loose("low"), Severity::Low);
+        // anything unrecognized falls back to Info
+        assert_eq!(Severity::from_str_loose("bogus"), Severity::Info);
+        assert_eq!(Severity::from_str_loose(""), Severity::Info);
+    }
+
+    #[test]
+    fn dedup_folds_identical_kind_and_details() {
+        let raw = vec![
+            Finding::new(Severity::Low, "http-probe", "a.example.com", "same"),
+            Finding::new(Severity::High, "http-probe", "b.example.com", "same"),
+            Finding::new(Severity::Low, "http-probe", "a.example.com", "same"),
+        ];
+        let deduped = dedup_findings(&raw);
+        assert_eq!(deduped.len(), 1);
+        let d = &deduped[0];
+        // severity promoted to the max of the group
+        assert_eq!(d.severity, Severity::High);
+        // count reflects number of source rows, not unique targets
+        assert_eq!(d.count, 3);
+        // targets deduped, insertion order preserved
+        assert_eq!(
+            d.targets,
+            vec!["a.example.com".to_string(), "b.example.com".to_string()]
+        );
+    }
+
+    #[test]
+    fn dedup_keeps_distinct_groups_and_sorts_by_severity() {
+        let raw = vec![
+            Finding::new(Severity::Info, "http-probe", "x", "low-thing"),
+            Finding::new(Severity::Critical, "nuclei", "y", "bad-thing"),
+        ];
+        let deduped = dedup_findings(&raw);
+        assert_eq!(deduped.len(), 2);
+        // sorted severity desc -> Critical first
+        assert_eq!(deduped[0].severity, Severity::Critical);
+        assert_eq!(deduped[1].severity, Severity::Info);
+    }
+
+    #[test]
+    fn dedup_empty_input_yields_empty() {
+        assert!(dedup_findings(&[]).is_empty());
+    }
+}

@@ -17,8 +17,8 @@ use super::state::PreflightReport;
 use crate::scope::{host_in_scope, normalize_host};
 use crate::tools::{
     exec_dnsx, exec_ffuf, exec_httpx, exec_nuclei, exec_subfinder, nuclei_templates_root,
-    parse_dnsx_output, parse_ffuf_output, resolve_wordlist, select_interesting_urls,
-    ToolExecution, ToolKind,
+    parse_dnsx_output, parse_ffuf_output, resolve_wordlist, select_interesting_urls, ToolExecution,
+    ToolKind,
 };
 
 use super::state::{preview, RunRecord, StepRecord};
@@ -47,7 +47,11 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     println!("[*] nuclei cap    : {}", cfg.nuclei_cap);
     println!(
         "[*] dedup         : {}",
-        if cfg.no_dedup { "off (--no-dedup)" } else { "on" }
+        if cfg.no_dedup {
+            "off (--no-dedup)"
+        } else {
+            "on"
+        }
     );
     println!();
 
@@ -369,8 +373,8 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                                     // Suspicious-low threshold: if scoped had >50
                                     // hosts and dnsx resolved <2%, treat as DNS
                                     // failure rather than a valid filter.
-                                    let suspicious_low = scoped.len() > 50
-                                        && kept * 50 < scoped.len();
+                                    let suspicious_low =
+                                        scoped.len() > 50 && kept * 50 < scoped.len();
                                     if kept == 0 || suspicious_low {
                                         println!(
                                             "[!] dnsx resolved {}/{} — suspiciously low, falling back to unfiltered list",
@@ -416,10 +420,8 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         // Prefer explicit URLs from the LLM; otherwise pull from httpx.
                         // When falling back to httpx, run the interesting-host
                         // heuristic so nuclei only scans the top N URLs.
-                        let explicit_urls: Option<Vec<String>> = args
-                            .get("urls")
-                            .and_then(|h| h.as_array())
-                            .map(|arr| {
+                        let explicit_urls: Option<Vec<String>> =
+                            args.get("urls").and_then(|h| h.as_array()).map(|arr| {
                                 arr.iter()
                                     .filter_map(|v| v.as_str().map(String::from))
                                     .collect()
@@ -507,10 +509,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         // Active mode: ffuf must pick one live URL at a time.
                         // Prefer the LLM's explicit "url" arg; otherwise fall
                         // back to the first scoped URL from last httpx run.
-                        let llm_url = args
-                            .get("url")
-                            .and_then(|u| u.as_str())
-                            .map(String::from);
+                        let llm_url = args.get("url").and_then(|u| u.as_str()).map(String::from);
                         let target_url = llm_url.unwrap_or_else(|| {
                             last_httpx_urls
                                 .iter()
@@ -524,11 +523,15 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                                 args: args.clone(),
                                 stdout: String::new(),
                                 stderr: String::new(),
-                                error: Some("no URL supplied and no live httpx URL available".into()),
+                                error: Some(
+                                    "no URL supplied and no live httpx URL available".into(),
+                                ),
                                 duration_ms: t0.elapsed().as_millis(),
                             }
                         } else if !host_in_scope(&target_url, &cfg.scope_patterns) {
-                            println!("[!] scope guard: ffuf URL '{target_url}' not in scope, skipping");
+                            println!(
+                                "[!] scope guard: ffuf URL '{target_url}' not in scope, skipping"
+                            );
                             ToolExecution {
                                 tool: kind,
                                 args: args.clone(),
@@ -540,7 +543,11 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                         } else {
                             match resolve_wordlist(cfg.ffuf_wordlist.as_deref()) {
                                 Ok((wl, _is_tmp)) => {
-                                    println!("[>] ffuf path-fuzzing {} (wordlist: {})", target_url, wl.display());
+                                    println!(
+                                        "[>] ffuf path-fuzzing {} (wordlist: {})",
+                                        target_url,
+                                        wl.display()
+                                    );
                                     match exec_ffuf(&target_url, &wl).await {
                                         Ok((so, se)) => ToolExecution {
                                             tool: kind,
@@ -665,11 +672,8 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                             )
                         }
                         ToolKind::Httpx => {
-                            let urls: Vec<String> = last_httpx_urls
-                                .iter()
-                                .take(10)
-                                .cloned()
-                                .collect();
+                            let urls: Vec<String> =
+                                last_httpx_urls.iter().take(10).cloned().collect();
                             format!(
                                 "{} live hosts responded. First {}: {}",
                                 line_count,
@@ -678,20 +682,14 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                             )
                         }
                         ToolKind::Nuclei => {
-                            let n = all_findings
-                                .iter()
-                                .filter(|f| f.kind == "nuclei")
-                                .count();
+                            let n = all_findings.iter().filter(|f| f.kind == "nuclei").count();
                             format!(
                                 "nuclei scan complete: {} JSONL lines, {} parsed findings. Next step should be done.",
                                 line_count, n
                             )
                         }
                         ToolKind::Ffuf => {
-                            let n = all_findings
-                                .iter()
-                                .filter(|f| f.kind == "ffuf")
-                                .count();
+                            let n = all_findings.iter().filter(|f| f.kind == "ffuf").count();
                             format!(
                                 "ffuf path-fuzz complete: {} parsed findings. Next step should be done unless you want to fuzz another live host.",
                                 n
@@ -706,7 +704,9 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
                 });
                 messages.push(ChatMessage {
                     role: "user".into(),
-                    content: format!("{observation}\n\nWhat next? Respond with a single JSON action."),
+                    content: format!(
+                        "{observation}\n\nWhat next? Respond with a single JSON action."
+                    ),
                 });
 
                 steps.push(StepRecord {
@@ -746,7 +746,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
     }
 
     // Sort raw findings by severity desc for report rendering.
-    all_findings.sort_by(|a, b| b.severity.cmp(&a.severity));
+    all_findings.sort_by_key(|f| std::cmp::Reverse(f.severity));
     let raw_findings_view = all_findings.clone();
 
     // Dedup (default) or passthrough.
@@ -796,8 +796,7 @@ pub async fn run_recon(cli: &Cli, domain: &str) -> Result<()> {
 
     std::fs::write(&findings_path, serde_json::to_string_pretty(&record)?)
         .context("write findings json")?;
-    std::fs::write(&report_path, render_report(&record))
-        .context("write markdown report")?;
+    std::fs::write(&report_path, render_report(&record)).context("write markdown report")?;
 
     println!();
     println!("========== AGENT SUMMARY ==========");

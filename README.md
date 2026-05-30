@@ -59,6 +59,7 @@ None of the hardware specifics are required for the current CPU path — the age
 - ✅ NPU driver unblocked — patched `amdxdna.ko` loads on cold boot, `xrt-smi` + `flm validate` green. See [`PHASE-2-RECON.md`](PHASE-2-RECON.md).
 - ⛔ NPU **inference** still blocked — FastFlowLM can't handle protocol-7 opcodes required by Qwen3/GGUF models. CPU path remains active until this unblocks.
 - ⚠️ Nuclei on the target hardware CPU still times out on full template sweeps with large host lists; `--nuclei-cap` flag added to limit input hosts
-- ⚠️ No automated tests yet. All verification has been manual end-to-end runs.
+- ✅ Unit tests cover the pure core logic: scope matching, the tool-output parsers (subfinder/httpx/nuclei/dnsx/ffuf), finding dedup + severity classification, and the LLM response parser (`cargo test` — 38 tests). End-to-end behavior against live targets is still verified manually.
+- ✅ CI runs `cargo fmt --check`, `cargo clippy -D warnings`, build, and test on every push/PR (`.github/workflows/ci.yml`).
 
 See [`RESEARCH.md`](RESEARCH.md) for the research brief this project is based on, including references to comparable pentest agents (Shannon, PentestGPT, PentAGI, CAI), NPU backend options (FastFlowLM, ort crate + Vitis AI EP), and an honest gap analysis.

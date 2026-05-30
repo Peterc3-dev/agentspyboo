@@ -64,7 +64,7 @@ pub fn render_report(r: &RunRecord) -> String {
                     conf
                 ));
             }
-            out.push_str("\n");
+            out.push('\n');
         }
 
         out.push_str("### CIDR blocks\n\n");
@@ -81,7 +81,7 @@ pub fn render_report(r: &RunRecord) -> String {
                     c.asn.as_deref().unwrap_or("—")
                 ));
             }
-            out.push_str("\n");
+            out.push('\n');
         }
 
         out.push_str("### GitHub organizations\n\n");
@@ -97,7 +97,7 @@ pub fn render_report(r: &RunRecord) -> String {
                     .unwrap_or_else(|| "—".to_string());
                 out.push_str(&format!("| `{}` | {} | {} |\n", g.login, g.name, conf));
             }
-            out.push_str("\n");
+            out.push('\n');
         }
 
         // Key-gated plugin status: render only when there's something
@@ -128,7 +128,7 @@ pub fn render_report(r: &RunRecord) -> String {
                     s.note,
                 ));
             }
-            out.push_str("\n");
+            out.push('\n');
             let missing_keys: Vec<&str> = actionable
                 .iter()
                 .filter(|s| s.status == "skipped_no_key")
@@ -197,7 +197,7 @@ pub fn render_report(r: &RunRecord) -> String {
                 expand_sections.push((i + 1, f));
             }
         }
-        out.push_str("\n");
+        out.push('\n');
         // Per-finding target lists for the collapsed entries.
         for (idx, f) in expand_sections {
             out.push_str(&format!(
@@ -242,7 +242,7 @@ pub fn render_report(r: &RunRecord) -> String {
             out.push_str(&format!("- `{t}` — {desc}\n"));
         }
     }
-    out.push_str("\n");
+    out.push('\n');
 
     // Step detail
     out.push_str("## Step Detail\n\n");
@@ -273,7 +273,9 @@ pub fn render_report(r: &RunRecord) -> String {
         }
     } else {
         out.push_str("- Review the discovered subdomains for staging/dev/admin/internal hosts that should not be exposed.\n");
-        out.push_str("- Promote medium+ nuclei findings into a formal report with reproduction steps.\n");
+        out.push_str(
+            "- Promote medium+ nuclei findings into a formal report with reproduction steps.\n",
+        );
         out.push_str("- For interesting HTTP titles (admin/login panels), run targeted directory enumeration (ffuf) on a case-by-case basis.\n");
     }
     out.push_str("\n---\n\n");

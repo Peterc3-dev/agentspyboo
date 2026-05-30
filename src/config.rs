@@ -151,12 +151,7 @@ impl Config {
                 active,
                 ffuf_wordlist,
                 ..
-            } => (
-                org.clone(),
-                asn.clone(),
-                *active,
-                ffuf_wordlist.clone(),
-            ),
+            } => (org.clone(), asn.clone(), *active, ffuf_wordlist.clone()),
         };
         Self {
             model,

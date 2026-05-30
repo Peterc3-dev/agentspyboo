@@ -217,9 +217,12 @@ pub async fn run_pius(
 
     let mut cmd = Command::new(&bin);
     cmd.arg("run")
-        .arg("--org").arg(org)
-        .arg("--mode").arg("passive")
-        .arg("--output").arg("ndjson");
+        .arg("--org")
+        .arg(org)
+        .arg("--mode")
+        .arg("passive")
+        .arg("--output")
+        .arg("ndjson");
 
     if let Some(d) = domain_hint {
         cmd.arg("--domain").arg(d);

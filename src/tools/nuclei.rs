@@ -45,7 +45,10 @@ pub async fn exec_nuclei(urls: &[String]) -> Result<(String, String)> {
         tmpl_args.push(path.to_string_lossy().into_owned());
     }
     if tmpl_args.is_empty() {
-        bail!("no curated nuclei template dirs exist under {}", root.display());
+        bail!(
+            "no curated nuclei template dirs exist under {}",
+            root.display()
+        );
     }
 
     let tmp = std::env::temp_dir().join(format!("agentspyboo-nuclei-{}.txt", std::process::id()));
@@ -89,8 +92,8 @@ pub async fn exec_nuclei(urls: &[String]) -> Result<(String, String)> {
 ///
 /// Returns at most `cap` URLs. Pure function — takes stdout, no side effects.
 pub fn select_interesting_urls(httpx_stdout: &str, cap: usize) -> Vec<String> {
-    use serde_json::Value;
     use crate::scope::normalize_host;
+    use serde_json::Value;
 
     #[derive(Default)]
     struct Row {
@@ -116,10 +119,7 @@ pub fn select_interesting_urls(httpx_stdout: &str, cap: usize) -> Vec<String> {
         if url.is_empty() {
             continue;
         }
-        let status = v
-            .get("status_code")
-            .and_then(|x| x.as_i64())
-            .unwrap_or(0);
+        let status = v.get("status_code").and_then(|x| x.as_i64()).unwrap_or(0);
         let title = v
             .get("title")
             .and_then(|x| x.as_str())
@@ -148,9 +148,21 @@ pub fn select_interesting_urls(httpx_stdout: &str, cap: usize) -> Vec<String> {
             score -= 40;
         }
         let juicy = [
-            "admin", "api", "auth", "login", "signin", "sign in", "internal",
-            "dashboard", "console", "staging", "dev", "jenkins", "grafana",
-            "kibana", "phpmyadmin",
+            "admin",
+            "api",
+            "auth",
+            "login",
+            "signin",
+            "sign in",
+            "internal",
+            "dashboard",
+            "console",
+            "staging",
+            "dev",
+            "jenkins",
+            "grafana",
+            "kibana",
+            "phpmyadmin",
         ];
         for kw in juicy {
             if title.contains(kw) || host_l.contains(kw) {
